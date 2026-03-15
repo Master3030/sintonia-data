@@ -1,21 +1,64 @@
 {
-    "config": {
-        "adminPassword": "sintonia2025",
-            "appUrl": "",
-                "apkUrl": "",
-                    "supportForm": "https://docs.google.com/forms/d/e/1FAIpQLSdqAYAQSNmnsYvaCYODbvn8c0K97QlJXxVlziMXgfZvWQIUbA/viewform"
-                      },
-                        "donations": {
-                            "btc": "",
-                                "pp": "",
-                                    "bank": "",
-                                        "tigo": ""
-                                          },
-                                            "stations": [
-                                                {"name":"Radio Amor","freq":"95.9 FM","abbr":"AM","color":"#7B1010","stream":"https://rds3.desdeparaguay.net/movamor/movamor.stream/playlist.m3u8","logo":"https://images.zeno.fm/9_4zOznEOVrBFTvspmaIFyXUAzdb7hAJOGmMMw-BWDg/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYjExMzA0OTgtYzY0Yi00YjlmLWEwMDItMTg1YjM1YTFlNDhhL2ltYWdlLz91PTE3MzY0OTQ3MTgwMDA.webp"},
-                                                    {"name":"Radio ANR","freq":"89.9 FM","abbr":"ANR","color":"#0D3B6E","stream":"https://rds3.desdeparaguay.net/transanr/transanr.stream/playlist.m3u8","logo":null},
-                                                        {"name":"Radio Ñemby","freq":"88.3 FM","abbr":"ÑB","color":"#1B5E20","stream":"https://rds3.desdeparaguay.net/mov883/mov883.stream/playlist.m3u8","logo":null},
-                                                            {"name":"Aranduka FM","freq":"87.9 FM","abbr":"ARK","color":"#4A148C","stream":"https://rds3.desdeparaguay.net/movaranduka/movaranduka.stream/playlist.m3u8","logo":"https://images.zeno.fm/IQFilEDPHAoXe9HvC7R-df2mJ_C-jIvMQolL7sOPzDE/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYWd4emZucGxibTh0YzNSaGRITnlNZ3NTQ2tGMWRHaERiR2xsYm5RWWdJRHdyc1BiamdnTUN4SU9VM1JoZEdsdmJsQnliMlpwYkdVWWdJRHczdnlQNVFzTW9nRUVlbVZ1YncvaW1hZ2UvP3U9MTY1ODY2NzU5NzAwMA.webp"}
-                                                              ]
-                                                              }
+  "config": {
+    "adminPassword": "sintonia2025",
+    "appUrl": "",
+    "apkUrl": "",
+    "supportForm": ""
+  },
+  "donations": {
+    "btc": "",
+    "pp": "",
+    "bank": "",
+    "tigo": ""
+  },
+  "stations": [
+    {
+      "name": "Radio Amor",
+      "freq": "95.9 FM",
+      "logo": "https://images.zeno.fm/9_4zOznEOVrBFTvspmaIFyXUAzdb7hAJOGmMMw-BWDg/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYjExMzA0OTgtYzY0Yi00YjlmLWEwMDItMTg1YjM1YTFlNDhhL2ltYWdlLz91PTE3MzY0OTQ3MTgwMDA.webp",
+      "abbr": "AM",
+      "color": "#7B1010",
+      "stream": "https://rds3.desdeparaguay.net/movamor/movamor.stream/playlist.m3u8"
+    },
+    {
+      "name": "Radio ANR",
+      "freq": "89.9 FM",
+      "logo": null,
+      "abbr": "ANR",
+      "color": "#0D3B6E",
+      "stream": "https://rds3.desdeparaguay.net/transanr/transanr.stream/playlist.m3u8"
+    },
+    {
+      "name": "Radio Ñemby",
+      "freq": "88.3 FM",
+      "logo": null,
+      "abbr": "ÑB",
+      "color": "#1B5E20",
+      "stream": "https://rds3.desdeparaguay.net/mov883/mov883.stream/playlist.m3u8"
+    },
+    {
+      "name": "Aranduka FM",
+      "freq": "87.9 FM",
+      "logo": "https://images.zeno.fm/IQFilEDPHAoXe9HvC7R-df2mJ_C-jIvMQolL7sOPzDE/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYWd4emZucGxibTh0YzNSaGRITnlNZ3NTQ2tGMWRHaERiR2xsYm5RWWdJRHdyc1BiamdnTUN4SU9VM1JoZEdsdmJsQnliMlpwYkdVWWdJRHczdnlQNVFzTW9nRUVlbVZ1YncvaW1hZ2UvP3U9MTY1ODY2NzU5NzAwMA.webp",
+      "abbr": "ARK",
+      "color": "#4A148C",
+      "stream": "https://rds3.desdeparaguay.net/movaranduka/movaranduka.stream/playlist.m3u8"
+    },
+    {
+      "name": "Radio Farra",
+      "freq": "101.3 FM",
+      "logo": null,
+      "abbr": "RF",
+      "color": "#e8003d",
+      "stream": "https://rfs1.farra.com.py:9433/stream"
+    },
+    {
+      "name": "Radio Popular",
+      "freq": "103.1  FM",
+      "logo": null,
+      "abbr": "RP",
+      "color": "#e8003d",
+      "stream": "https://rds3.desdeparaguay.net/transpopular/transpopular.stream/playlist.m3u8"
+    }
+  ]
 }
