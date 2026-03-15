@@ -184,6 +184,9 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 .gh-status{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#fff;font-size:12px;padding:8px 18px;border-radius:20px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;border:1px solid rgba(255,255,255,.15)}
 .gh-status.show{opacity:1}
 </style>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="glow" id="glow"></div>
@@ -363,13 +366,21 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <script>
 // ═══════════════════════════════════
-// GITHUB CONFIG
+// FIREBASE CONFIG
 // ═══════════════════════════════════
-var GH_API='https://api.github.com/repos/Master3030/sintonia-data/contents/stations.json';
-var GH_RAW='https://raw.githubusercontent.com/Master3030/sintonia-data/main/stations.json';
-var GH_TOKEN='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';
+var firebaseConfig = {
+  apiKey: "AIzaSyA0Yk_rFlQoP7VE-b6mrR1EzsljVYoBkTk",
+  authDomain: "sintonia-app-20271.firebaseapp.com",
+  projectId: "sintonia-app-20271",
+  storageBucket: "sintonia-app-20271.firebasestorage.app",
+  messagingSenderId: "200584866223",
+  appId: "1:200584866223:web:15d29e69c9cef1d08ae75a"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+var SINTONIA_DOC = db.collection('sintonia').doc('data');
 
-// Default config (se sobreescribe con GitHub)
+// Default config (se sobreescribe con Firebase)
 var PASS='sintonia2025';
 var DEF=[
   {name:'Cargando emisoras...',freq:'',logo:null,abbr:'...',color:'#333',stream:'',fav:false}
@@ -383,44 +394,41 @@ function svSt(){
 }
 // Cargar config desde GitHub
 function loadFromGitHub(){
-  var xhr=new XMLHttpRequest();
-  xhr.open('GET',GH_RAW+'?nocache='+Date.now(),true);
-  xhr.timeout=10000;
-  xhr.onload=function(){
-    if(xhr.status===200){
-      try{
-        var data=JSON.parse(xhr.responseText);
-        // Config
-        if(data.config){
-          if(data.config.adminPassword) PASS=data.config.adminPassword;
-          if(data.config.appUrl) appC.url=data.config.appUrl;
-          if(data.config.apkUrl) appC.apk=data.config.apkUrl;
-          if(data.config.supportForm) appC.form=data.config.supportForm;
-          try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(e){}
-          aplyApp();
-        }
-        // Donaciones
-        if(data.donations){
-          try{localStorage.setItem('snt_don',JSON.stringify(data.donations));}catch(e){}
-          applyDon();
-        }
-        // Emisoras — siempre reemplaza desde GitHub
-        if(data.stations&&data.stations.length>0){
-          stations=data.stations.map(function(s){
-            return {name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr||s.name.substring(0,3).toUpperCase(),color:s.color||'#333',stream:s.stream||'',fav:false};
-          });
-          try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
-          cur=0; iPlayer(); rList(); rFavs(); rRec();
-        }
-      }catch(e){console.log('GitHub parse error:',e);}
+  // Cargar desde Firebase
+  SINTONIA_DOC.get().then(function(doc){
+    if(doc.exists){
+      var data=doc.data();
+      // Config
+      if(data.config){
+        if(data.config.adminPassword) PASS=data.config.adminPassword;
+        if(data.config.appUrl) appC.url=data.config.appUrl;
+        if(data.config.apkUrl) appC.apk=data.config.apkUrl;
+        if(data.config.supportForm) appC.form=data.config.supportForm;
+        try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(e){}
+        aplyApp();
+      }
+      // Donaciones
+      if(data.donations){
+        try{localStorage.setItem('snt_don',JSON.stringify(data.donations));}catch(e){}
+        applyDon();
+      }
+      // Emisoras
+      if(data.stations&&data.stations.length>0){
+        stations=data.stations.map(function(s){
+          return {name:s.name,freq:s.freq||'',logo:s.logo||null,
+                  abbr:s.abbr||s.name.substring(0,3).toUpperCase(),
+                  color:s.color||'#333',stream:s.stream||'',fav:false};
+        });
+        try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
+        cur=0; iPlayer(); rList(); rFavs(); rRec();
+      }
     }
-  };
-  xhr.ontimeout=function(){console.log('GitHub timeout, usando datos locales');};
-  xhr.onerror=function(){console.log('GitHub sin conexion, usando datos locales');};
-  xhr.send();
+  }).catch(function(e){
+    console.log('Firebase load error:',e);
+  });
 }
-// Guardar en GitHub
 function saveToGitHub(callback){
+  // Guardar en Firebase
   var don={btc:'',pp:'',bank:'',tigo:''};
   try{var d=localStorage.getItem('snt_don');if(d)don=JSON.parse(d);}catch(e){}
   var payload={
@@ -432,47 +440,16 @@ function saveToGitHub(callback){
     },
     donations:don,
     stations:stations.map(function(s){
-      return {name:s.name,freq:s.freq,logo:s.logo,abbr:s.abbr,color:s.color,stream:s.stream};
-    })
+      return {name:s.name,freq:s.freq||'',logo:s.logo||null,
+              abbr:s.abbr,color:s.color,stream:s.stream||''};
+    }),
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
   };
-  var encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
-  // Step 1: Get current SHA
-  fetch(GH_API,{
-    method:'GET',
-    headers:{
-      'Authorization':'token '+GH_TOKEN,
-      'Accept':'application/vnd.github.v3+json'
-    }
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var sha=data.sha||'';
-    // Step 2: Update file
-    return fetch(GH_API,{
-      method:'PUT',
-      headers:{
-        'Authorization':'token '+GH_TOKEN,
-        'Content-Type':'application/json',
-        'Accept':'application/vnd.github.v3+json'
-      },
-      body:JSON.stringify({
-        message:'Actualizado desde Sintonía Admin',
-        content:encoded,
-        sha:sha
-      })
-    });
-  })
-  .then(function(r){
-    if(r.status===200||r.status===201){
-      if(callback)callback(true);
-    } else {
-      r.text().then(function(t){console.log('GitHub error:',r.status,t);});
-      if(callback)callback(false);
-    }
-  })
-  .catch(function(e){
-    console.log('saveToGitHub error:',e);
-    if(callback)callback(false);
+  SINTONIA_DOC.set(payload).then(function(){
+    if(callback) callback(true);
+  }).catch(function(e){
+    console.log('Firebase save error:',e);
+    if(callback) callback(false);
   });
 }
 
