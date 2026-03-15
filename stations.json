@@ -52,13 +52,6 @@
       "color": "#e8003d",
       "stream": "https://rfs1.farra.com.py:9433/stream"
     },
-    {
-      "name": "Radio Popular",
-      "freq": "103.1  FM",
-      "logo": null,
-      "abbr": "RP",
-      "color": "#e8003d",
-      "stream": "https://rds3.desdeparaguay.net/transpopular/transpopular.stream/playlist.m3u8"
-    }
+    
   ]
 }
