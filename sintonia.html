@@ -421,7 +421,6 @@ function loadFromGitHub(){
 }
 // Guardar en GitHub
 function saveToGitHub(callback){
-  // Armar JSON completo
   var don={btc:'',pp:'',bank:'',tigo:''};
   try{var d=localStorage.getItem('snt_don');if(d)don=JSON.parse(d);}catch(e){}
   var payload={
@@ -432,36 +431,51 @@ function saveToGitHub(callback){
       supportForm:appC.form||''
     },
     donations:don,
-    stations:stations.map(function(s){return {name:s.name,freq:s.freq,logo:s.logo,abbr:s.abbr,color:s.color,stream:s.stream};})
+    stations:stations.map(function(s){
+      return {name:s.name,freq:s.freq,logo:s.logo,abbr:s.abbr,color:s.color,stream:s.stream};
+    })
   };
-  var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
-  // Obtener SHA actual del archivo
-  var xhrGet=new XMLHttpRequest();
-  xhrGet.open('GET',GH_API,true);
-  xhrGet.setRequestHeader('Authorization','token '+GH_TOKEN);
-  xhrGet.setRequestHeader('Accept','application/vnd.github.v3+json');
-  xhrGet.onload=function(){
-    var sha='';
-    try{var r=JSON.parse(xhrGet.responseText);sha=r.sha||'';}catch(e){}
-    // Actualizar archivo
-    var xhrPut=new XMLHttpRequest();
-    xhrPut.open('PUT',GH_API,true);
-    xhrPut.setRequestHeader('Authorization','token '+GH_TOKEN);
-    xhrPut.setRequestHeader('Content-Type','application/json');
-    xhrPut.setRequestHeader('Accept','application/vnd.github.v3+json');
-    xhrPut.onload=function(){
-      if(xhrPut.status===200||xhrPut.status===201){
-        if(callback) callback(true);
-      } else {
-        if(callback) callback(false);
-      }
-    };
-    xhrPut.onerror=function(){if(callback)callback(false);};
-    xhrPut.send(JSON.stringify({message:'Actualizado desde Sintonía Admin',content:content,sha:sha}));
-  };
-  xhrGet.onerror=function(){if(callback)callback(false);};
-  xhrGet.send();
+  var encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+  // Step 1: Get current SHA
+  fetch(GH_API,{
+    method:'GET',
+    headers:{
+      'Authorization':'token '+GH_TOKEN,
+      'Accept':'application/vnd.github.v3+json'
+    }
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var sha=data.sha||'';
+    // Step 2: Update file
+    return fetch(GH_API,{
+      method:'PUT',
+      headers:{
+        'Authorization':'token '+GH_TOKEN,
+        'Content-Type':'application/json',
+        'Accept':'application/vnd.github.v3+json'
+      },
+      body:JSON.stringify({
+        message:'Actualizado desde Sintonía Admin',
+        content:encoded,
+        sha:sha
+      })
+    });
+  })
+  .then(function(r){
+    if(r.status===200||r.status===201){
+      if(callback)callback(true);
+    } else {
+      r.text().then(function(t){console.log('GitHub error:',r.status,t);});
+      if(callback)callback(false);
+    }
+  })
+  .catch(function(e){
+    console.log('saveToGitHub error:',e);
+    if(callback)callback(false);
+  });
 }
+
 function renderAll(){rList();rFavs();rRec();}
 var stations=ldSt(),cur=0,playing=false,muted=false,hls=null,slpInt=null,slpLeft=0,recent=[];
 var audio=new Audio();audio.volume=0.85;
