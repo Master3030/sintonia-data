@@ -196,18 +196,17 @@ body.light .bnav{background:rgba(242,242,242,.96)}
   <div class="header"><div class="logo" id="secretLogo" onclick="sTap()">Sinto<b>nía</b></div><div class="signal"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div></div>
   <div class="eyebrow"><div class="ld"></div> En vivo ahora</div>
   <div class="player-card">
-  <div class="np-top"><div id="npLogo"></div><div class="np-info"><div class="np-name" id="npName">—</div><div class="np-freq" id="npFreq">—</div></div></div>
-  <div class="visualizer" id="viz"></div>
-  <div class="controls">
-    <div class="ctrl" onclick="pSt()">⏮</div>
-    <div class="ctrl" id="volBtn" onclick="tMute()">🔊</div>
-    <div class="play-btn" id="playBtn" onclick="tPlay()">▶</div>
-    <div class="ctrl" onclick="nSt()">⏭</div>
-    <div class="fav-btn" id="npFav" onclick="tNF()">♡</div>
-  </div>
-  <!-- BARRA DE ESTADO -->
-  <div class="status-bar" id="statusBar">
-    <span class="status-text">▸ En vivo</span>
+    <div class="np-top"><div id="npLogo"></div><div class="np-info"><div class="np-name" id="npName">—</div><div class="np-freq" id="npFreq">—</div></div></div>
+    <div class="visualizer" id="viz"></div>
+    <div class="controls">
+      <div class="ctrl" onclick="pSt()">⏮</div>
+      <div class="ctrl" id="volBtn" onclick="tMute()">🔊</div>
+      <div class="play-btn" id="playBtn" onclick="tPlay()">▶</div>
+      <div class="ctrl" onclick="nSt()">⏭</div>
+      <div class="fav-btn" id="npFav" onclick="tNF()">♡</div>
+    </div>
+    <!-- BARRA DE ESTADO -->
+    <div class="status-bar" id="statusBar"></div>
   </div>
   <div class="tabs">
     <div class="tab active" onclick="switchTab('all')">Todas</div>
@@ -299,9 +298,11 @@ body.light .bnav{background:rgba(242,242,242,.96)}
   <div class="cs"><div class="cst">Apoyar el proyecto</div>
     <div class="dc">
       <div class="dr"><div class="di" style="background:rgba(247,147,26,.15)">₿</div><div class="dn"><div class="dnm">Bitcoin (BTC)</div><div class="ddt" id="d-btc">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div></div><button class="dbtn" onclick="cpDon('d-btc',this)">Copiar</button></div>
-      <div class="dr"><div class="di" style="background:rgba(0,48,135,.2);color:#fff;font-size:13"px";font-weight:700">PayPal</div><div class="dn"><div class="dnm">PayPal</div><div class="ddt" id="d-pp">paypal.me/tucuenta</div></div><button class="dbtn" onclick="opPP()">Abrir</button></div>
+      <div class="dr"><div class="di" style="background:rgba(0,48,135,.2);color:#fff;font-size:13px;font-weight:700">PP</div><div class="dn"><div class="dnm">PayPal</div><div class="ddt" id="d-pp">paypal.me/tucuenta</div></div><button class="dbtn" onclick="opPP()">Abrir</button></div>
       <div class="dr"><div class="di" style="background:rgba(0,170,228,.12)">🏦</div><div class="dn"><div class="dnm">Banco — Alias PYG</div><div class="ddt" id="d-bank">Alias: SINTONÍA.PY</div></div><button class="dbtn" onclick="cpDon('d-bank',this)">Copiar</button></div>
-    <!--  <div class="dr"><div class="di" style="background:rgba(232,0,61,.1)">📱</div><div class="dn"><div class="dnm">Tigo Money</div><div class="ddt" id="d-tigo">+595 9XX XXX XXX</div></div><button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button></div> -->
+      <!-- TIGO MONEY OCULTO
+      <div class="dr"><div class="di" style="background:rgba(232,0,61,.1)">📱</div><div class="dn"><div class="dnm">Tigo Money</div><div class="ddt" id="d-tigo">+595 9XX XXX XXX</div></div><button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button></div>
+      -->
     </div>
   </div>
 
@@ -425,6 +426,23 @@ var editingIndex = -1;
 var currentTab = 'all';
 
 // ═══════════════════════════════════
+// FUNCIÓN DE ESTADO DE LA BARRA
+// ═══════════════════════════════════
+function sStat(t, m) {
+    var el = document.getElementById('statusBar');
+    if (!el) return;
+    if (t === 'loading') {
+        el.innerHTML = '<div class="dl"><span></span><span></span><span></span></div><span>Conectando…</span>';
+    } else if (t === 'error') {
+        el.innerHTML = '<span class="etxt">⚠ ' + (m || 'Stream no disponible') + '</span>';
+    } else if (t === 'ok') {
+        el.innerHTML = '<span>▸ En vivo</span>';
+    } else {
+        el.innerHTML = '';
+    }
+}
+
+// ═══════════════════════════════════
 // FAVORITOS - LOCAL STORAGE
 // ═══════════════════════════════════
 function loadFavorites() {
@@ -482,67 +500,14 @@ function updateFavCount() {
 }
 
 // ═══════════════════════════════════
-// MEDIA SESSION (NOTIFICACIONES)
-// ═══════════════════════════════════
-function setupMediaSession() {
-  if ('mediaSession' in navigator) {
-    // Actualizar metadata
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: stations[currentStationIndex]?.name || 'Sintonía',
-      artist: stations[currentStationIndex]?.freq || 'Radio en vivo',
-      album: 'Sintonía Paraguay',
-      artwork: [
-        { src: stations[currentStationIndex]?.logo || '', sizes: '96x96', type: 'image/png' }
-      ]
-    });
-    
-    // Handlers de acciones
-    navigator.mediaSession.setActionHandler('play', function() {
-      if (!isPlaying) tPlay();
-    });
-    
-    navigator.mediaSession.setActionHandler('pause', function() {
-      if (isPlaying) tPlay();
-    });
-    
-    navigator.mediaSession.setActionHandler('previoustrack', function() {
-      pSt();
-    });
-    
-    navigator.mediaSession.setActionHandler('nexttrack', function() {
-      nSt();
-    });
-    
-    navigator.mediaSession.setActionHandler('stop', function() {
-      if (isPlaying) tPlay();
-    });
-  }
-}
-
-function updateMediaSession() {
-  if (!('mediaSession' in navigator)) return;
-  
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: stations[currentStationIndex]?.name || 'Sintonía',
-    artist: stations[currentStationIndex]?.freq || 'Radio en vivo',
-    album: 'Sintonía Paraguay',
-    artwork: [
-      { src: stations[currentStationIndex]?.logo || '', sizes: '96x96', type: 'image/png' }
-    ]
-  });
-  
-  navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
-}
-
-// ═══════════════════════════════════
 // CARGA INICIAL
 // ═══════════════════════════════════
 function loadFromFirebase() {
+  sStat('loading');
   SINTONIA_DOC.get().then(function(doc) {
     if (doc.exists) {
       var data = doc.data();
       
-      // Config
       if (data.config) {
         if (data.config.adminPassword) PASS = data.config.adminPassword;
         if (data.config.appUrl) appC.url = data.config.appUrl;
@@ -550,13 +515,11 @@ function loadFromFirebase() {
         if (data.config.supportForm) SUP_FORM_URL = data.config.supportForm;
       }
       
-      // Donaciones
       if (data.donations) {
         try { localStorage.setItem('snt_don', JSON.stringify(data.donations)); } catch(e) {}
         applyDon();
       }
       
-      // Emisoras
       if (data.stations && data.stations.length > 0) {
         stations = data.stations.map(function(s) {
           return {
@@ -577,17 +540,16 @@ function loadFromFirebase() {
         ];
       }
       
-      // Guardar en localStorage como backup
       try { localStorage.setItem('snt_st', JSON.stringify(stations)); } catch(e) {}
       
-      // Inicializar
       loadFavorites();
       initPlayer();
       renderCurrentView();
     }
+    sStat('ok');
   }).catch(function(e) {
     console.log('Error cargando desde Firebase:', e);
-    // Fallback a localStorage
+    sStat('error', 'Error de conexión');
     try {
       var saved = localStorage.getItem('snt_st');
       stations = saved ? JSON.parse(saved) : [];
@@ -642,7 +604,6 @@ function initPlayer() {
   var s = stations[0];
   updateNPInfo(s);
   sGlow(s.color);
-  updateMediaSession();
 }
 
 function updateNPInfo(s) {
@@ -674,6 +635,7 @@ function sGlow(c) {
 }
 
 function playStation(index) {
+  sStat('loading');
   if (index < 0 || index >= stations.length) return;
   
   currentStationIndex = index;
@@ -682,46 +644,69 @@ function playStation(index) {
   updateNPInfo(s);
   sGlow(s.color);
   
-  // Actualizar recientes
   var ri = recent.indexOf(index);
   if (ri >= 0) recent.splice(ri, 1);
   recent.unshift(index);
   if (recent.length > 10) recent.pop();
   
-  // Detener reproducción actual
   if (hls) { hls.destroy(); hls = null; }
   audio.pause();
   audio.src = '';
   
-  // Iniciar nueva reproducción
   if (!isPlaying) {
     isPlaying = true;
     document.getElementById('playBtn').textContent = '⏸';
   }
   
-  // Visualizer
   document.querySelectorAll('.bar').forEach(b => b.style.animationPlayState = 'running');
   
-  // Determinar tipo de stream
   var stream = s.stream;
+  if (!stream) {
+    sStat('error', 'Stream no disponible');
+    return;
+  }
+  
   if (stream.indexOf('.m3u8') >= 0) {
     if (Hls.isSupported()) {
       hls = new Hls({ enableWorker: false });
       hls.loadSource(stream);
       hls.attachMedia(audio);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        audio.play().catch(function() {});
+        audio.play()
+          .then(function() { sStat('ok'); })
+          .catch(function(e) { 
+            sStat('error', 'Tocá ▶ para reproducir');
+          });
+      });
+      hls.on(Hls.Events.ERROR, function(e, d) {
+        if (d.fatal) sStat('error', 'Stream no disponible');
       });
     } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
       audio.src = stream;
-      audio.play().catch(function() {});
+      audio.play()
+        .then(function() { sStat('ok'); })
+        .catch(function() { sStat('error', 'Tocá ▶'); });
+    } else {
+      sStat('error', 'Formato no soportado');
     }
   } else {
     audio.src = stream;
-    audio.play().catch(function() {});
+    audio.onerror = function() { 
+      sStat('error', 'Stream no disponible');
+    };
+    audio.oncanplay = function() {
+      audio.play()
+        .then(function() { 
+          sStat('ok'); 
+          audio.oncanplay = null;
+        })
+        .catch(function() { 
+          sStat('error', 'Tocá ▶ para reproducir');
+        });
+    };
+    audio.load();
   }
   
-  updateMediaSession();
   renderCurrentView();
 }
 
@@ -729,17 +714,16 @@ function tPlay() {
   if (!stations.length) return;
   
   if (isPlaying) {
-    // Pausar
     isPlaying = false;
     document.getElementById('playBtn').textContent = '▶';
     document.querySelectorAll('.bar').forEach(b => b.style.animationPlayState = 'paused');
     audio.pause();
-    if (hls) { /* mantener hls */ }
+    sStat('');
   } else {
-    // Reproducir
     isPlaying = true;
     document.getElementById('playBtn').textContent = '⏸';
     document.querySelectorAll('.bar').forEach(b => b.style.animationPlayState = 'running');
+    sStat('loading');
     
     if (audio.src) {
       audio.play().catch(function() {});
@@ -747,8 +731,6 @@ function tPlay() {
       playStation(currentStationIndex);
     }
   }
-  
-  updateMediaSession();
 }
 
 function pSt() {
@@ -776,7 +758,6 @@ function renderCurrentView() {
   else if (currentTab === 'recent') renderRecentStations();
   else if (currentTab === 'favorites') renderFavoritesList();
   
-  // Actualizar botones de favoritos en el reproductor
   if (stations[currentStationIndex]) {
     var isFav = isFavorite(stations[currentStationIndex].name, stations[currentStationIndex].freq);
     var favBtn = document.getElementById('npFav');
@@ -1311,7 +1292,6 @@ function applyDon() {
   var btc = document.getElementById('d-btc'); if (btc) btc.textContent = d.btc || '';
   var pp = document.getElementById('d-pp'); if (pp) pp.textContent = d.pp || '';
   var bk = document.getElementById('d-bank'); if (bk) bk.textContent = d.bank || '';
-  var tg = document.getElementById('d-tigo'); if (tg) tg.textContent = d.tigo || '';
 }
 
 function sDonCfg(e) {
@@ -1381,7 +1361,6 @@ function cpDon(id, btn) {
 
 function setSleep(m, btn) {
   document.querySelectorAll('.sbn').forEach(function(b) { b.classList.remove('active'); });
-  // Simplificado - implementar sleep timer real requiere más código
   btn.classList.add('active');
   document.getElementById('slpVal').textContent = m ? m + ' min' : '—';
   document.getElementById('slpSub').textContent = m ? 'Apaga en ' + m + ' min' : 'Desactivado';
@@ -1463,7 +1442,6 @@ for (var vi = 0; vi < 28; vi++) {
 document.addEventListener('DOMContentLoaded', function() {
   loadFromFirebase();
   
-  // Configuración guardada
   try {
     var uc = localStorage.getItem('snt_cfg');
     if (uc) cfg = JSON.parse(uc);
@@ -1474,10 +1452,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   } catch(e) {}
   
-  // Aplicar datos de donación
   applyDon();
-  
-  // Actualizar UI de app
   document.getElementById('appUrl').textContent = appC.url || 'Configurá tu enlace en el panel admin';
 });
 </script>
