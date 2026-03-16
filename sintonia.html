@@ -196,16 +196,18 @@ body.light .bnav{background:rgba(242,242,242,.96)}
   <div class="header"><div class="logo" id="secretLogo" onclick="sTap()">Sinto<b>nía</b></div><div class="signal"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div></div>
   <div class="eyebrow"><div class="ld"></div> En vivo ahora</div>
   <div class="player-card">
-    <div class="np-top"><div id="npLogo"></div><div class="np-info"><div class="np-name" id="npName">—</div><div class="np-freq" id="npFreq">—</div></div></div>
-    <div class="visualizer" id="viz"></div>
-    <div class="controls">
-      <div class="ctrl" onclick="pSt()">⏮</div>
-      <div class="ctrl" id="volBtn" onclick="tMute()">🔊</div>
-      <div class="play-btn" id="playBtn" onclick="tPlay()">▶</div>
-      <div class="ctrl" onclick="nSt()">⏭</div>
-      <div class="fav-btn" id="npFav" onclick="tNF()">♡</div>
-    </div>
-    <div class="status-bar" id="statusBar"></div>
+  <div class="np-top"><div id="npLogo"></div><div class="np-info"><div class="np-name" id="npName">—</div><div class="np-freq" id="npFreq">—</div></div></div>
+  <div class="visualizer" id="viz"></div>
+  <div class="controls">
+    <div class="ctrl" onclick="pSt()">⏮</div>
+    <div class="ctrl" id="volBtn" onclick="tMute()">🔊</div>
+    <div class="play-btn" id="playBtn" onclick="tPlay()">▶</div>
+    <div class="ctrl" onclick="nSt()">⏭</div>
+    <div class="fav-btn" id="npFav" onclick="tNF()">♡</div>
+  </div>
+  <!-- BARRA DE ESTADO -->
+  <div class="status-bar" id="statusBar">
+    <span class="status-text">▸ En vivo</span>
   </div>
   <div class="tabs">
     <div class="tab active" onclick="switchTab('all')">Todas</div>
@@ -297,9 +299,9 @@ body.light .bnav{background:rgba(242,242,242,.96)}
   <div class="cs"><div class="cst">Apoyar el proyecto</div>
     <div class="dc">
       <div class="dr"><div class="di" style="background:rgba(247,147,26,.15)">₿</div><div class="dn"><div class="dnm">Bitcoin (BTC)</div><div class="ddt" id="d-btc">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div></div><button class="dbtn" onclick="cpDon('d-btc',this)">Copiar</button></div>
-      <div class="dr"><div class="di" style="background:rgba(0,48,135,.2);color:#fff;font-size:13px;font-weight:700">PP</div><div class="dn"><div class="dnm">PayPal</div><div class="ddt" id="d-pp">paypal.me/tucuenta</div></div><button class="dbtn" onclick="opPP()">Abrir</button></div>
+      <div class="dr"><div class="di" style="background:rgba(0,48,135,.2);color:#fff;font-size:13"px";font-weight:700">PayPal</div><div class="dn"><div class="dnm">PayPal</div><div class="ddt" id="d-pp">paypal.me/tucuenta</div></div><button class="dbtn" onclick="opPP()">Abrir</button></div>
       <div class="dr"><div class="di" style="background:rgba(0,170,228,.12)">🏦</div><div class="dn"><div class="dnm">Banco — Alias PYG</div><div class="ddt" id="d-bank">Alias: SINTONÍA.PY</div></div><button class="dbtn" onclick="cpDon('d-bank',this)">Copiar</button></div>
-      <div class="dr"><div class="di" style="background:rgba(232,0,61,.1)">📱</div><div class="dn"><div class="dnm">Tigo Money</div><div class="ddt" id="d-tigo">+595 9XX XXX XXX</div></div><button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button></div>
+    <!--  <div class="dr"><div class="di" style="background:rgba(232,0,61,.1)">📱</div><div class="dn"><div class="dnm">Tigo Money</div><div class="ddt" id="d-tigo">+595 9XX XXX XXX</div></div><button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button></div> -->
     </div>
   </div>
 
