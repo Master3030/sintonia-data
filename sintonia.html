@@ -259,7 +259,7 @@ body.light .bnav{background:rgba(242,242,242,.96)}
    <!--   <div class="shr"><div class="shi" style="background:rgba(37,211,102,.12)">💬</div><div class="shin"><div class="shnm">Compartir por WhatsApp</div><div class="shds">Enviá el enlace de la app</div></div><button class="shbtn" onclick="shWA()">Compartir</button></div> -->
       <div class="shr"><div class="shi" style="background:rgba(232,0,61,.1)">🔗</div><div class="shin"><div class="shnm">Copiar enlace</div><div class="shds">Para compartir en cualquier app</div></div><button class="shbtn" id="cpLnkBtn" onclick="cpLink()">Copiar</button></div>
       <div class="shr"><div class="shi" style="background:rgba(100,100,255,.12)">📱</div><div class="shin"><div class="shnm">Descargar APK</div><div class="shds">Instalá en Android directamente</div></div><button class="shbtn" onclick="dlAPK()">Descargar</button></div>
-      <div class="urlbox" id="appUrl">Comparte la Aplicación con familiares y amigos</div>
+      <div class="urlbox" id="appUrl">Configurá tu enlace en el panel admin</div>
     </div>
   </div>
 
@@ -1487,7 +1487,7 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch(e) {}
   
   applyDon();
-  document.getElementById('appUrl').textContent = appC.url || 'Configurá tu enlace en el panel admin;
+  document.getElementById('appUrl').textContent = appC.url || 'Configurá tu enlace en el panel admin';
 });
 </script>
 </body>
