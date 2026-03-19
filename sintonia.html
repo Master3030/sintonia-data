@@ -253,7 +253,7 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 
   <div class="cs"><div class="cst">Compartir Sintonía</div>
     <div class="shc">
-     <!-- <div class="shr"><div class="shi" style="background:rgba(37,211,102,.12)">💬</div><div class="shin"><div class="shnm">Compartir por WhatsApp</div><div class="shds">Enviá el enlace de la app</div></div><button class="shbtn" onclick="shWA()">Compartir</button></div> -->
+      <!-- <div class="shr"><div class="shi" style="background:rgba(37,211,102,.12)">💬</div><div class="shin"><div class="shnm">Compartir por WhatsApp</div><div class="shds">Enviá el enlace de la app</div></div><button class="shbtn" onclick="shWA()">Compartir</button></div> -->
       <div class="shr"><div class="shi" style="background:rgba(232,0,61,.1)">🔗</div><div class="shin"><div class="shnm">Copiar enlace</div><div class="shds">Para compartir en cualquier app</div></div><button class="shbtn" id="cpLnkBtn" onclick="cpLink()">Copiar</button></div>
       <div class="shr"><div class="shi" style="background:rgba(100,100,255,.12)">📱</div><div class="shin"><div class="shnm">Descargar APK</div><div class="shds">Instalá en Android directamente</div></div><button class="shbtn" onclick="dlAPK()">Descargar</button></div>
       <div class="urlbox" id="appUrl">Configurá tu enlace en el panel admin</div>
@@ -297,7 +297,7 @@ body.light .bnav{background:rgba(242,242,242,.96)}
       <div class="dr"><div class="di" style="background:rgba(247,147,26,.15)">₿</div><div class="dn"><div class="dnm">Bitcoin (BTC)</div><div class="ddt" id="d-btc">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div></div><button class="dbtn" onclick="cpDon('d-btc',this)">Copiar</button></div>
       <div class="dr"><div class="di" style="background:rgba(0,48,135,.2);color:#fff;font-size:13px;font-weight:700">PP</div><div class="dn"><div class="dnm">PayPal</div><div class="ddt" id="d-pp">paypal.me/tucuenta</div></div><button class="dbtn" onclick="opPP()">Abrir</button></div>
       <div class="dr"><div class="di" style="background:rgba(0,170,228,.12)">🏦</div><div class="dn"><div class="dnm">Banco — Alias PYG</div><div class="ddt" id="d-bank">Alias: SINTONÍA.PY</div></div><button class="dbtn" onclick="cpDon('d-bank',this)">Copiar</button></div>
-      <div class="dr"><div class="di" style="background:rgba(232,0,61,.1)">📱</div><div class="dn"><div class="dnm">Tigo Money</div><div class="ddt" id="d-tigo">+595 9XX XXX XXX</div></div><button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button></div>
+     <!-- <div class="dr"><div class="di" style="background:rgba(232,0,61,.1)">📱</div><div class="dn"><div class="dnm">Tigo Money</div><div class="ddt" id="d-tigo">+595 9XX XXX XXX</div></div><button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button></div> -->
     </div>
   </div>
 
@@ -337,7 +337,7 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     <input class="fi" id="fd-btc"  type="text" placeholder="Dirección Bitcoin (BTC)">
     <input class="fi" id="fd-pp"   type="text" placeholder="PayPal (ej: paypal.me/tucuenta)">
     <input class="fi" id="fd-bank" type="text" placeholder="Banco / Alias PYG">
-    <input class="fi" id="fd-tigo" type="text" placeholder="Tigo Money (número)">
+    <!-- <input class="fi" id="fd-tigo" type="text" placeholder="Tigo Money (número)"> -->
     <button class="badd" style="margin-bottom:0" onclick="sDonCfg(event)">Guardar datos de donación</button>
 
     <div class="adv"></div>
@@ -668,26 +668,73 @@ function sGlow(c){document.getElementById('glow').style.background='radial-gradi
 function sStat(t,m){var el=document.getElementById('statusBar');if(t==='loading')el.innerHTML='<div class="dl"><span></span><span></span><span></span></div><span>Conectando…</span>';else if(t==='error')el.innerHTML='<span class="etxt">⚠ '+(m||'Stream no disponible')+'</span>';else if(t==='ok')el.innerHTML='<span>▸ En vivo</span>';else el.innerHTML='';}
 function stType(u){if(!u)return 'direct';var v=u.toLowerCase().split('?')[0];if(v.indexOf('.m3u8')>=0)return 'hls';return 'direct';}
 function ldStn(idx){
-  cur=idx;var s=stations[idx];
-  var nl=document.getElementById('npLogo');nl.innerHTML='';nl.appendChild(mkLg(s,'lg'));
+  cur=idx; var s=stations[idx];
+  var nl=document.getElementById('npLogo'); nl.innerHTML=''; nl.appendChild(mkLg(s,'lg'));
   document.getElementById('npName').textContent=s.name;
   document.getElementById('npFreq').textContent=s.freq||'';
-  uFavUI();sGlow(s.color);
-  var ri=recent.indexOf(idx);if(ri>=0)recent.splice(ri,1);recent.unshift(idx);if(recent.length>10)recent.pop();
+  uFavUI(); sGlow(s.color);
+  var ri=recent.indexOf(idx); if(ri>=0)recent.splice(ri,1); recent.unshift(idx); if(recent.length>10)recent.pop();
+  // Limpiar stream anterior
   if(hls){hls.destroy();hls=null;}
-  audio.pause();audio.src='';audio.onerror=null;audio.oncanplay=null;
-  vPlay(false);sStat('loading');playing=true;document.getElementById('playBtn').textContent='⏸';
-  if(stType(s.stream)==='hls'){
-    if(Hls.isSupported()){hls=new Hls({enableWorker:false});hls.loadSource(s.stream);hls.attachMedia(audio);hls.on(Hls.Events.MANIFEST_PARSED,function(){audio.play().then(function(){vPlay(true);sStat('ok');}).catch(function(){sStat('error','Tocá ▶ para reproducir');});});hls.on(Hls.Events.ERROR,function(e,d){if(d.fatal)sStat('error','Stream no disponible');});}
-    else if(audio.canPlayType('application/vnd.apple.mpegurl')){audio.src=s.stream;audio.play().then(function(){vPlay(true);sStat('ok');}).catch(function(){sStat('error','Tocá ▶');});}
-    else{sStat('error','HLS no soportado');}
-  }else{
-    audio.src=s.stream;
-    audio.onerror=function(){sStat('error','Stream no disponible');};
-    audio.oncanplay=function(){audio.play().then(function(){vPlay(true);sStat('ok');audio.oncanplay=null;}).catch(function(){sStat('error','Tocá ▶ para reproducir');});};
-    audio.load();
+  audio.pause(); audio.src=''; audio.onerror=null; audio.oncanplay=null;
+  vPlay(false); sStat('loading'); playing=true;
+  document.getElementById('playBtn').textContent='⏸';
+  var stream=s.stream||'';
+  if(!stream){sStat('error','Sin URL de stream');return;}
+  if(stType(stream)==='hls'){
+    // HLS — configuración optimizada para conexión rápida
+    if(Hls.isSupported()){
+      hls=new Hls({
+        enableWorker: false,
+        lowLatencyMode: true,
+        backBufferLength: 0,
+        maxBufferLength: 8,
+        maxMaxBufferLength: 16,
+        manifestLoadingTimeOut: 5000,
+        manifestLoadingMaxRetry: 2,
+        levelLoadingTimeOut: 5000,
+        fragLoadingTimeOut: 8000
+      });
+      hls.loadSource(stream);
+      hls.attachMedia(audio);
+      hls.on(Hls.Events.MANIFEST_PARSED, function(){
+        audio.play()
+          .then(function(){ vPlay(true); sStat('ok'); })
+          .catch(function(){ sStat('error','Tocá ▶ para reproducir'); });
+      });
+      hls.on(Hls.Events.ERROR, function(e,d){
+        if(d.fatal){
+          if(d.type===Hls.ErrorTypes.NETWORK_ERROR){
+            // Reintento automático en error de red
+            setTimeout(function(){ if(playing) hls.startLoad(); }, 2000);
+          } else {
+            sStat('error','Stream no disponible');
+          }
+        }
+      });
+    } else if(audio.canPlayType('application/vnd.apple.mpegurl')){
+      audio.src=stream; audio.preload='none';
+      audio.play().then(function(){vPlay(true);sStat('ok');}).catch(function(){sStat('error','Tocá ▶');});
+    } else { sStat('error','HLS no soportado'); }
+  } else {
+    // Stream directo: /stream, .aac, .mp3 — conexión directa sin esperar canplay
+    audio.preload='none';
+    audio.src=stream;
+    audio.onerror=function(){ sStat('error','Stream no disponible'); };
+    // Para streams directos intentamos play() inmediatamente sin esperar canplay
+    audio.play()
+      .then(function(){ vPlay(true); sStat('ok'); audio.onerror=null; })
+      .catch(function(){
+        // Si falla, esperar canplay como fallback
+        audio.oncanplay=function(){
+          audio.play()
+            .then(function(){ vPlay(true); sStat('ok'); audio.oncanplay=null; })
+            .catch(function(){ sStat('error','Tocá ▶ para reproducir'); });
+        };
+        audio.load();
+      });
   }
-  rList();rFavs();rRec();
+  rList(); rFavs(); rRec();
 }
 function iPlayer(){if(!stations.length)return;var s=stations[0];var nl=document.getElementById('npLogo');nl.innerHTML='';nl.appendChild(mkLg(s,'lg'));document.getElementById('npName').textContent=s.name;document.getElementById('npFreq').textContent=s.freq||'';sGlow(s.color);}
 function tPlay(){if(!stations.length)return;if(!playing){playing=true;document.getElementById('playBtn').textContent='⏸';if(hls){audio.play().then(function(){vPlay(true);sStat('ok');});}else{ldStn(cur);}}else{playing=false;audio.pause();vPlay(false);sStat('','');document.getElementById('playBtn').textContent='▶';}}
