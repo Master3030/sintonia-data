@@ -253,7 +253,7 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 
   <div class="cs"><div class="cst">Compartir Sintonía</div>
     <div class="shc">
-      <div class="shr"><div class="shi" style="background:rgba(37,211,102,.12)">💬</div><div class="shin"><div class="shnm">Compartir por WhatsApp</div><div class="shds">Enviá el enlace de la app</div></div><button class="shbtn" onclick="shWA()">Compartir</button></div>
+     <!-- <div class="shr"><div class="shi" style="background:rgba(37,211,102,.12)">💬</div><div class="shin"><div class="shnm">Compartir por WhatsApp</div><div class="shds">Enviá el enlace de la app</div></div><button class="shbtn" onclick="shWA()">Compartir</button></div> -->
       <div class="shr"><div class="shi" style="background:rgba(232,0,61,.1)">🔗</div><div class="shin"><div class="shnm">Copiar enlace</div><div class="shds">Para compartir en cualquier app</div></div><button class="shbtn" id="cpLnkBtn" onclick="cpLink()">Copiar</button></div>
       <div class="shr"><div class="shi" style="background:rgba(100,100,255,.12)">📱</div><div class="shin"><div class="shnm">Descargar APK</div><div class="shds">Instalá en Android directamente</div></div><button class="shbtn" onclick="dlAPK()">Descargar</button></div>
       <div class="urlbox" id="appUrl">Configurá tu enlace en el panel admin</div>
@@ -353,6 +353,27 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     <div class="adv"></div>
     <div class="flbl">Emisoras actuales</div>
     <div id="admList"></div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="pwo" id="editModal" style="z-index:1001;">
+  <div class="pwb" style="width:340px;max-width:95vw;">
+    <div class="pwi">✏️</div>
+    <div class="pwt">Editar emisora</div>
+    <input class="fi" id="edit-name" type="text" placeholder="Nombre" style="color:#F5F5F5;margin-bottom:8px;">
+    <input class="fi" id="edit-freq" type="text" placeholder="Frecuencia" style="color:#F5F5F5;margin-bottom:8px;">
+    <input class="fi" id="edit-stream" type="url" placeholder="URL del stream" style="color:#F5F5F5;margin-bottom:8px;">
+    <input class="fi" id="edit-logo" type="url" placeholder="URL del logo (opcional)" style="color:#F5F5F5;margin-bottom:8px;">
+    <div class="clr" style="margin-bottom:8px;">
+      <input class="cp" id="edit-color" type="color" value="#E8003D" oninput="document.getElementById('edit-cprev').style.background=this.value">
+      <div id="edit-cprev" style="flex:1;height:46px;border-radius:12px;background:#E8003D;border:1px solid rgba(255,255,255,.08);"></div>
+    </div>
+    <input class="fi" id="edit-abbr" type="text" placeholder="Abreviatura (ej: AM, RF)" style="color:#F5F5F5;margin-bottom:16px;">
+    <div style="display:flex;gap:8px;">
+      <button class="pwok" style="flex:2;" onclick="saveEditStation()">Guardar cambios</button>
+      <button onclick="closeEditModal()" style="flex:1;background:rgba(255,255,255,.1);border:none;color:#fff;padding:13px;border-radius:12px;cursor:pointer;font-family:Inter,sans-serif;">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -600,7 +621,45 @@ function delSt(i){
     else{showGHStatus('⚠ Error al guardar en nube');}
   });
 }
-function rAdmList(){var el=document.getElementById('admList');el.innerHTML='';if(!stations.length){el.innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px;padding:10px 0">Sin emisoras.</p>';return;}stations.forEach(function(s,i){var it=document.createElement('div');it.className='ai';var bg=document.createElement('div');bg.className='ab2';bg.style.background=s.color;if(s.logo){var im=document.createElement('img');im.src=s.logo;im.onerror=function(){im.remove();};bg.appendChild(im);}var sp=document.createElement('span');sp.textContent=s.abbr;sp.style.cssText='position:relative;z-index:1';bg.appendChild(sp);var inf=document.createElement('div');inf.style.flex='1';inf.style.minWidth='0';var an=document.createElement('div');an.className='ain';an.textContent=s.name;var af=document.createElement('div');af.className='ais';af.textContent=s.freq||'Sin frecuencia';inf.appendChild(an);inf.appendChild(af);var dl=document.createElement('button');dl.className='bdel';dl.textContent='Borrar';dl.onclick=(function(idx){return function(){delSt(idx);};})(i);it.appendChild(bg);it.appendChild(inf);it.appendChild(dl);el.appendChild(it);});}
+function rAdmList(){
+  var el=document.getElementById('admList');
+  el.innerHTML='';
+  if(!stations.length){
+    el.innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px;padding:10px 0">Sin emisoras.</p>';
+    return;
+  }
+  stations.forEach(function(s,i){
+    var it=document.createElement('div'); it.className='ai';
+    // Badge con logo
+    var bg=document.createElement('div'); bg.className='ab2'; bg.style.background=s.color;
+    if(s.logo){var im=document.createElement('img');im.src=s.logo;im.onerror=function(){im.remove();};bg.appendChild(im);}
+    var sp=document.createElement('span'); sp.textContent=s.abbr||s.name.substring(0,2); sp.style.cssText='position:relative;z-index:1'; bg.appendChild(sp);
+    // Info
+    var inf=document.createElement('div'); inf.style.flex='1'; inf.style.minWidth='0';
+    var an=document.createElement('div'); an.className='ain'; an.textContent=s.name;
+    var af=document.createElement('div'); af.className='ais'; af.textContent=s.freq||'Sin frecuencia';
+    inf.appendChild(an); inf.appendChild(af);
+    // Botones
+    var btnDiv=document.createElement('div'); btnDiv.style.cssText='display:flex;gap:4px;';
+    // Botón editar
+    var editBtn=document.createElement('button'); editBtn.className='bdel';
+    editBtn.style.cssText='background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2);font-size:14px;';
+    editBtn.textContent='✏️';
+    editBtn.onclick=(function(idx){return function(e){e.stopPropagation();openEditModal(idx);};})(i);
+    // Botón borrar
+    var del=document.createElement('button'); del.className='bdel'; del.textContent='🗑️';
+    del.onclick=(function(idx){return function(){
+      if(!confirm('¿Eliminar "'+stations[idx].name+'"?'))return;
+      stations.splice(idx,1);
+      if(currentStationIndex>=stations.length) currentStationIndex=Math.max(0,stations.length-1);
+      saveToFirebase(); rAdmList(); renderAllStations();
+      if(stations.length) playStation(currentStationIndex);
+    };})(i);
+    btnDiv.appendChild(editBtn); btnDiv.appendChild(del);
+    it.appendChild(bg); it.appendChild(inf); it.appendChild(btnDiv);
+    el.appendChild(it);
+  });
+}
 var vEl=document.getElementById('viz');
 for(var vi=0;vi<28;vi++){var vb=document.createElement('div');vb.className='bar';vb.style.setProperty('--lo',(0.04+Math.random()*.1).toFixed(2));vb.style.setProperty('--hi',(0.5+Math.random()*.5).toFixed(2));vb.style.setProperty('--d',(0.35+Math.random()*.65).toFixed(2)+'s');vb.style.setProperty('--del',(vi*.018).toFixed(3)+'s');vb.style.height='100%';vEl.appendChild(vb);}
 function vPlay(on){vEl.querySelectorAll('.bar').forEach(function(b){b.style.animationPlayState=on?'running':'paused';});}
@@ -664,6 +723,47 @@ function showGHStatus(msg){
   el.textContent=msg;
   el.classList.add('show');
   setTimeout(function(){el.classList.remove('show');},3000);
+}
+
+// ═══════════════════════════════════
+// EDIT STATION
+// ═══════════════════════════════════
+var editingIndex = -1;
+
+function openEditModal(index) {
+  editingIndex = index;
+  var s = stations[index];
+  document.getElementById('edit-name').value = s.name || '';
+  document.getElementById('edit-freq').value = s.freq || '';
+  document.getElementById('edit-stream').value = s.stream || '';
+  document.getElementById('edit-logo').value = s.logo || '';
+  document.getElementById('edit-color').value = s.color || '#E8003D';
+  document.getElementById('edit-cprev').style.background = s.color || '#E8003D';
+  document.getElementById('edit-abbr').value = s.abbr || s.name.substring(0,3).toUpperCase();
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  editingIndex = -1;
+}
+
+function saveEditStation() {
+  if (editingIndex < 0) return;
+  stations[editingIndex] = {
+    name:   document.getElementById('edit-name').value.trim(),
+    freq:   document.getElementById('edit-freq').value.trim(),
+    stream: document.getElementById('edit-stream').value.trim(),
+    logo:   document.getElementById('edit-logo').value.trim() || null,
+    color:  document.getElementById('edit-color').value,
+    abbr:   document.getElementById('edit-abbr').value.trim() || document.getElementById('edit-name').value.trim().substring(0,3).toUpperCase()
+  };
+  closeEditModal();
+  rAdmList();
+  renderAllStations();
+  saveToFirebase(function(ok){
+    showGHStatus(ok ? '✓ Emisora actualizada en la nube' : '⚠ Error al guardar');
+  });
 }
 
 // ═══════════════════════════════════
@@ -780,4 +880,3 @@ audio.addEventListener('ended', function() {
 </script>
 </body>
 </html>
-
