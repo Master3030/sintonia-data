@@ -131,6 +131,7 @@ body.light{--bg:#F2F2F2;--card:#FFF;--border:rgba(0,0,0,.08);--text:#0A0A0A;--mu
 .dbtn{font-size:11px;color:var(--accent);padding:5px 10px;border:1px solid rgba(232,0,61,.3);border-radius:8px;cursor:pointer;white-space:nowrap;background:none;font-family:'Inter',sans-serif;transition:all .2s}
 .dbtn:hover{background:rgba(232,0,61,.1)}
 .dbtn.copied{color:#00D68F;border-color:rgba(0,214,143,.3)}
+.ddt{font-size:11px;color:var(--muted);font-family:monospace;display:none}
 .crd{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;text-align:center}
 .crl{font-family:'Playfair Display',serif;font-style:italic;font-size:26px;margin-bottom:6px;letter-spacing:-.5px}
 .crl b{font-style:normal;color:var(--accent)}
@@ -205,15 +206,11 @@ body.light .bnav{background:rgba(242,242,242,.96)}
       <div class="ctrl" onclick="nSt()">⏭</div>
       <div class="fav-btn" id="npFav" onclick="tNF()">♡</div>
     </div>
-    <!-- BARRA DE ESTADO -->
     <div class="status-bar" id="statusBar"></div>
   </div>
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('all')">Todas</div>
-    <div class="tab" onclick="switchTab('recent')">Recientes</div>
-    <div class="tab" onclick="switchTab('favorites')" data-tab="favorites">Favoritas <span class="fav-count">0</span></div>
-  </div>
-  <div id="stationsContainer"></div>
+  <div class="tabs"><div class="tab active" onclick="hTab('all',this)">Todas</div><div class="tab" onclick="hTab('rec',this)">Recientes</div></div>
+  <div id="ht-all"><div id="stList"></div></div>
+  <div id="ht-rec" style="display:none"><div id="recList"></div></div>
 </div>
 
 <div class="page" id="page-search">
@@ -256,7 +253,7 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 
   <div class="cs"><div class="cst">Compartir Sintonía</div>
     <div class="shc">
-   <!--   <div class="shr"><div class="shi" style="background:rgba(37,211,102,.12)">💬</div><div class="shin"><div class="shnm">Compartir por WhatsApp</div><div class="shds">Enviá el enlace de la app</div></div><button class="shbtn" onclick="shWA()">Compartir</button></div> -->
+      <div class="shr"><div class="shi" style="background:rgba(37,211,102,.12)">💬</div><div class="shin"><div class="shnm">Compartir por WhatsApp</div><div class="shds">Enviá el enlace de la app</div></div><button class="shbtn" onclick="shWA()">Compartir</button></div>
       <div class="shr"><div class="shi" style="background:rgba(232,0,61,.1)">🔗</div><div class="shin"><div class="shnm">Copiar enlace</div><div class="shds">Para compartir en cualquier app</div></div><button class="shbtn" id="cpLnkBtn" onclick="cpLink()">Copiar</button></div>
       <div class="shr"><div class="shi" style="background:rgba(100,100,255,.12)">📱</div><div class="shin"><div class="shnm">Descargar APK</div><div class="shds">Instalá en Android directamente</div></div><button class="shbtn" onclick="dlAPK()">Descargar</button></div>
       <div class="urlbox" id="appUrl">Configurá tu enlace en el panel admin</div>
@@ -296,49 +293,13 @@ body.light .bnav{background:rgba(242,242,242,.96)}
   </div>
 
   <div class="cs"><div class="cst">Apoyar el proyecto</div>
-  <div class="dc">
-    <!-- Bitcoin -->
-    <div class="dr">
-      <div class="di" style="background:rgba(247,147,26,.15)">₿</div>
-      <div class="dn">
-        <div class="dnm">Bitcoin (BTC)</div>
-        <div class="ddt" id="d-btc">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
-      </div>
-      <button class="dbtn" onclick="cpDon('d-btc',this)">Copiar</button>
+    <div class="dc">
+      <div class="dr"><div class="di" style="background:rgba(247,147,26,.15)">₿</div><div class="dn"><div class="dnm">Bitcoin (BTC)</div><div class="ddt" id="d-btc">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div></div><button class="dbtn" onclick="cpDon('d-btc',this)">Copiar</button></div>
+      <div class="dr"><div class="di" style="background:rgba(0,48,135,.2);color:#fff;font-size:13px;font-weight:700">PP</div><div class="dn"><div class="dnm">PayPal</div><div class="ddt" id="d-pp">paypal.me/tucuenta</div></div><button class="dbtn" onclick="opPP()">Abrir</button></div>
+      <div class="dr"><div class="di" style="background:rgba(0,170,228,.12)">🏦</div><div class="dn"><div class="dnm">Banco — Alias PYG</div><div class="ddt" id="d-bank">Alias: SINTONÍA.PY</div></div><button class="dbtn" onclick="cpDon('d-bank',this)">Copiar</button></div>
+      <div class="dr"><div class="di" style="background:rgba(232,0,61,.1)">📱</div><div class="dn"><div class="dnm">Tigo Money</div><div class="ddt" id="d-tigo">+595 9XX XXX XXX</div></div><button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button></div>
     </div>
-    
-    <!-- PayPal -->
-    <div class="dr">
-      <div class="di" style="background:rgba(0,48,135,.2); color:#fff; font-size:13px; font-weight:700">PP</div>
-      <div class="dn">
-        <div class="dnm">PayPal</div>
-        <div class="ddt" id="d-pp">paypal.me/sintoniapy</div>
-      </div>
-      <button class="dbtn" onclick="opPP()">Abrir</button>
-    </div>
-    
-    <!-- Banco Alias -->
-    <div class="dr">
-      <div class="di" style="background:rgba(0,170,228,.12)">🏦</div>
-      <div class="dn">
-        <div class="dnm">Banco — Alias PYG</div>
-        <div class="ddt" id="d-bank">SINTONIA.PY</div>
-      </div>
-      <button class="dbtn" onclick="cpDon('d-bank',this)">Copiar</button>
-    </div>
-    
-    <!-- TIGO MONEY (OCULTO COMO COMENTARIO) 
-    <div class="dr">
-      <div class="di" style="background:rgba(232,0,61,.1)">📱</div>
-      <div class="dn">
-        <div class="dnm">Tigo Money</div>
-        <div class="ddt" id="d-tigo">0981 456 789</div>
-      </div>
-      <button class="dbtn" onclick="cpDon('d-tigo',this)">Copiar</button>
-    </div>
-    -->
   </div>
-</div>
 
   <div class="cs"><div class="cst">Acerca de</div>
     <div class="crd"><div class="crl">Sinto<b>nía</b></div><div class="crv">VERSIÓN 1.0.0 · PARAGUAY</div><div class="crt">La app de radio paraguaya más elegante.<br>Escuchá tus emisoras favoritas en vivo.<br><br>Desarrollado con ❤️ en Paraguay.<br>© 2025 Sintonía · Todos los derechos reservados.</div></div>
@@ -390,30 +351,8 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     <button class="badd" onclick="addSt()">+ Agregar emisora</button>
 
     <div class="adv"></div>
-    <div class="flbl">Emisoras actuales <button class="sbn" style="padding:4px 8px; margin-left:8px;" onclick="toggleEditMode()" id="editModeBtn">✏️ Editar modo</button></div>
+    <div class="flbl">Emisoras actuales</div>
     <div id="admList"></div>
-  </div>
-</div>
-
-<!-- EDIT MODAL -->
-<div class="pwo" id="editModal" style="z-index:1001;">
-  <div class="pwb" style="width:340px;">
-    <div class="pwi">✏️</div>
-    <div class="pwt">Editar estación</div>
-    <div class="pws">Modificá los datos de la emisora</div>
-    <input class="fi" id="edit-name" type="text" placeholder="Nombre" style="margin-bottom:8px;">
-    <input class="fi" id="edit-freq" type="text" placeholder="Frecuencia" style="margin-bottom:8px;">
-    <input class="fi" id="edit-stream" type="url" placeholder="URL del stream" style="margin-bottom:8px;">
-    <input class="fi" id="edit-logo" type="url" placeholder="URL del logo (opcional)" style="margin-bottom:8px;">
-    <div class="clr" style="margin-bottom:8px;">
-      <input class="cp" id="edit-color" type="color" value="#E8003D">
-      <div class="cpv" id="edit-color-preview" style="background:#E8003D; height:46px;"></div>
-    </div>
-    <input class="fi" id="edit-abbr" type="text" placeholder="Abreviatura (ej: AM)" style="margin-bottom:16px;">
-    <div style="display:flex; gap:8px;">
-      <button class="pwok" style="flex:2;" onclick="saveEditStation()">Guardar cambios</button>
-      <button class="pwcan" style="flex:1; background:rgba(255,255,255,.1); border:none; color:#fff; padding:13px; border-radius:12px;" onclick="closeEditModal()">Cancelar</button>
-    </div>
   </div>
 </div>
 
@@ -441,1054 +380,404 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var SINTONIA_DOC = db.collection('sintonia').doc('data');
 
-// ═══════════════════════════════════
-// VARIABLES GLOBALES
-// ═══════════════════════════════════
-var stations = [];
-var favorites = [];
-var currentStationIndex = 0;
-var isPlaying = false;
-var audio = new Audio();
-var hls = null;
-var PASS = 'sintonia2025';
-var appC = {url: '', apk: '', form: ''};
-var cfg = {quality: 'auto', theme: 'dark'};
-var recent = [];
-var SUP_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdqAYAQSNmnsYvaCYODbvn8c0K97QlJXxVlziMXgfZvWQIUbA/viewform';
-var editMode = false;
-var editingIndex = -1;
-var currentTab = 'all';
-
-// ═══════════════════════════════════
-// FUNCIÓN DE ESTADO DE LA BARRA
-// ═══════════════════════════════════
-function sStat(t, m) {
-    var el = document.getElementById('statusBar');
-    if (!el) return;
-    if (t === 'loading') {
-        el.innerHTML = '<div class="dl"><span></span><span></span><span></span></div><span>Conectando…</span>';
-    } else if (t === 'error') {
-        el.innerHTML = '<span class="etxt">⚠ ' + (m || 'Stream no disponible') + '</span>';
-    } else if (t === 'ok') {
-        el.innerHTML = '<span>▸ En vivo</span>';
-    } else {
-        el.innerHTML = '';
-    }
+// Default config (se sobreescribe con Firebase)
+var PASS='sintonia2025';
+var DEF=[
+  {name:'Cargando emisoras...',freq:'',logo:null,abbr:'...',color:'#333',stream:'',fav:false}
+];
+function ldSt(){
+  try{var s=localStorage.getItem('snt_st');if(s)return JSON.parse(s);}catch(e){}
+  return DEF.map(function(x){return JSON.parse(JSON.stringify(x));});
 }
-
-// ═══════════════════════════════════
-// FAVORITOS - LOCAL STORAGE
-// ═══════════════════════════════════
-function loadFavorites() {
-  try {
-    var saved = localStorage.getItem('sintonia_favorites');
-    favorites = saved ? JSON.parse(saved) : [];
-  } catch(e) {
-    favorites = [];
-  }
-  updateFavCount();
-  return favorites;
+function svSt(){
+  try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
 }
-
-function saveFavorites() {
-  try {
-    localStorage.setItem('sintonia_favorites', JSON.stringify(favorites));
-  } catch(e) {}
-  updateFavCount();
-}
-
-function toggleFavorite(station) {
-  var id = station.name + (station.freq || '');
-  var index = favorites.findIndex(f => f.id === id);
-  
-  if (index >= 0) {
-    favorites.splice(index, 1);
-  } else {
-    favorites.push({
-      id: id,
-      name: station.name,
-      freq: station.freq || '',
-      logo: station.logo || null,
-      color: station.color || '#7B1010',
-      abbr: station.abbr || station.name.substring(0,2).toUpperCase(),
-      stream: station.stream
-    });
-  }
-  
-  saveFavorites();
-  updateFavCount();
-  renderCurrentView();
-}
-
-function isFavorite(stationName, stationFreq) {
-  var id = stationName + (stationFreq || '');
-  return favorites.some(f => f.id === id);
-}
-
-function updateFavCount() {
-  var count = favorites.length;
-  document.querySelectorAll('.fav-count').forEach(el => {
-    el.textContent = count;
-  });
-  document.getElementById('savSub').textContent = count + ' emisora' + (count !== 1 ? 's' : '') + ' guardada' + (count !== 1 ? 's' : '');
-}
-
-// ═══════════════════════════════════
-// CARGA INICIAL
-// ═══════════════════════════════════
-function loadFromFirebase() {
-  sStat('loading');
-  SINTONIA_DOC.get().then(function(doc) {
-    if (doc.exists) {
-      var data = doc.data();
-      
-      if (data.config) {
-        if (data.config.adminPassword) PASS = data.config.adminPassword;
-        if (data.config.appUrl) appC.url = data.config.appUrl;
-        if (data.config.apkUrl) appC.apk = data.config.apkUrl;
-        if (data.config.supportForm) SUP_FORM_URL = data.config.supportForm;
+// Cargar config desde GitHub
+function loadFromGitHub(){
+  // Cargar desde Firebase
+  SINTONIA_DOC.get().then(function(doc){
+    if(doc.exists){
+      var data=doc.data();
+      // Config
+      if(data.config){
+        if(data.config.adminPassword) PASS=data.config.adminPassword;
+        if(data.config.appUrl) appC.url=data.config.appUrl;
+        if(data.config.apkUrl) appC.apk=data.config.apkUrl;
+        if(data.config.supportForm) appC.form=data.config.supportForm;
+        try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(e){}
+        aplyApp();
       }
-      
-      if (data.donations) {
-        try { localStorage.setItem('snt_don', JSON.stringify(data.donations)); } catch(e) {}
+      // Donaciones
+      if(data.donations){
+        try{localStorage.setItem('snt_don',JSON.stringify(data.donations));}catch(e){}
         applyDon();
       }
-      
-      if (data.stations && data.stations.length > 0) {
-        stations = data.stations.map(function(s) {
-          return {
-            name: s.name,
-            freq: s.freq || '',
-            logo: s.logo || null,
-            abbr: s.abbr || s.name.substring(0,2).toUpperCase(),
-            color: s.color || '#7B1010',
-            stream: s.stream || ''
-          };
+      // Emisoras
+      if(data.stations&&data.stations.length>0){
+        stations=data.stations.map(function(s){
+          return {name:s.name,freq:s.freq||'',logo:s.logo||null,
+                  abbr:s.abbr||s.name.substring(0,3).toUpperCase(),
+                  color:s.color||'#333',stream:s.stream||'',fav:false};
         });
-      } else {
-        stations = [
-          {name:'Radio Amor',freq:'95.9 FM',logo:'https://images.zeno.fm/9_4zOznEOVrBFTvspmaIFyXUAzdb7hAJOGmMMw-BWDg/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYjExMzA0OTgtYzY0Yi00YjlmLWEwMDItMTg1YjM1YTFlNDhhL2ltYWdlLz91PTE3MzY0OTQ3MTgwMDA.webp',abbr:'AM',color:'#7B1010',stream:'https://rds3.desdeparaguay.net/movamor/movamor.stream/playlist.m3u8'},
-          {name:'Radio ANR',freq:'89.9 FM',logo:null,abbr:'ANR',color:'#0D3B6E',stream:'https://rds3.desdeparaguay.net/transanr/transanr.stream/playlist.m3u8'},
-          {name:'Radio Ñemby',freq:'88.3 FM',logo:null,abbr:'ÑB',color:'#1B5E20',stream:'https://rds3.desdeparaguay.net/mov883/mov883.stream/playlist.m3u8'},
-          {name:'Aranduka FM',freq:'87.9 FM',logo:'https://images.zeno.fm/IQFilEDPHAoXe9HvC7R-df2mJ_C-jIvMQolL7sOPzDE/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYWd4emZucGxibTh0YzNSaGRITnlNZ3NTQ2tGMWRHaERiR2xsYm5RWWdJRHdyc1BiamdnTUN4SU9VM1JoZEdsdmJsQnliMlpwYkdVWWdJRHczdnlQNVFzTW9nRUVlbVZ1YncvaW1hZ2UvP3U9MTY1ODY2NzU5NzAwMA.webp',abbr:'ARK',color:'#4A148C',stream:'https://rds3.desdeparaguay.net/movaranduka/movaranduka.stream/playlist.m3u8'}
-        ];
+        try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
+        cur=0; iPlayer(); rList(); rFavs(); rRec();
       }
-      
-      try { localStorage.setItem('snt_st', JSON.stringify(stations)); } catch(e) {}
-      
-      loadFavorites();
-      initPlayer();
-      renderCurrentView();
     }
-    sStat('ok');
-  }).catch(function(e) {
-    console.log('Error cargando desde Firebase:', e);
-    sStat('error', 'Error de conexión');
-    try {
-      var saved = localStorage.getItem('snt_st');
-      stations = saved ? JSON.parse(saved) : [];
-    } catch(e) {}
-    if (!stations.length) stations = [];
-    loadFavorites();
-    initPlayer();
-    renderCurrentView();
+  }).catch(function(e){
+    console.log('Firebase load error:',e);
   });
 }
-
-function saveToFirebase(callback) {
-  var don = {btc:'',pp:'',bank:'',tigo:''};
-  try { var d = localStorage.getItem('snt_don'); if (d) don = JSON.parse(d); } catch(e) {}
-  
-  var payload = {
-    config: {
-      adminPassword: PASS,
-      appUrl: appC.url || '',
-      apkUrl: appC.apk || '',
-      supportForm: SUP_FORM_URL
+function saveToGitHub(callback){
+  // Guardar en Firebase
+  var don={btc:'',pp:'',bank:'',tigo:''};
+  try{var d=localStorage.getItem('snt_don');if(d)don=JSON.parse(d);}catch(e){}
+  var payload={
+    config:{
+      adminPassword:PASS,
+      appUrl:appC.url||'',
+      apkUrl:appC.apk||'',
+      supportForm:appC.form||''
     },
-    donations: don,
-    stations: stations.map(function(s) {
-      return {
-        name: s.name,
-        freq: s.freq || '',
-        logo: s.logo || null,
-        abbr: s.abbr,
-        color: s.color,
-        stream: s.stream || ''
-      };
+    donations:don,
+    stations:stations.map(function(s){
+      return {name:s.name,freq:s.freq||'',logo:s.logo||null,
+              abbr:s.abbr,color:s.color,stream:s.stream||''};
     }),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
   };
-  
-  SINTONIA_DOC.set(payload).then(function() {
-    if (callback) callback(true);
-    showStatus('✓ Guardado en la nube');
-  }).catch(function(e) {
-    console.log('Error guardando en Firebase:', e);
-    if (callback) callback(false);
-    showStatus('⚠ Error al guardar en nube');
+  SINTONIA_DOC.set(payload).then(function(){
+    if(callback) callback(true);
+  }).catch(function(e){
+    console.log('Firebase save error:',e);
+    if(callback) callback(false);
   });
 }
 
-// ═══════════════════════════════════
-// REPRODUCTOR
-// ═══════════════════════════════════
-function initPlayer() {
-  if (!stations.length) return;
-  var s = stations[0];
-  updateNPInfo(s);
-  sGlow(s.color);
+function renderAll(){rList();rFavs();rRec();}
+var stations=ldSt(),cur=0,playing=false,muted=false,hls=null,slpInt=null,slpLeft=0,recent=[];
+var audio=new Audio();audio.volume=0.85;
+var appC={url:'',apk:'',form:''};try{var ac=localStorage.getItem('snt_app');if(ac)appC=JSON.parse(ac);}catch(e){}
+var cfg={quality:'auto',theme:'dark'};try{var uc=localStorage.getItem('snt_cfg');if(uc)cfg=JSON.parse(uc);}catch(e){}
+function sCfg(){cfg.quality=document.getElementById('qualSel').value;try{localStorage.setItem('snt_cfg',JSON.stringify(cfg));}catch(e){}}
+function aplyC(){
+  document.getElementById('qualSel').value=cfg.quality||'auto';
+  if(cfg.theme==='light'){document.body.classList.add('light');document.getElementById('themeTog').classList.add('on');}
+  aplyApp();
 }
-
-function updateNPInfo(s) {
-  var nl = document.getElementById('npLogo');
-  nl.innerHTML = '';
-  nl.appendChild(createLogo(s, 'lg'));
-  document.getElementById('npName').textContent = s.name;
-  document.getElementById('npFreq').textContent = s.freq || '';
+var SUP_FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSdqAYAQSNmnsYvaCYODbvn8c0K97QlJXxVlziMXgfZvWQIUbA/viewform';
+function aplyApp(){
+  document.getElementById('appUrl').textContent=appC.url||'Configurá tu enlace en el panel admin';
+  if(appC.form) SUP_FORM_URL=appC.form;
 }
-
-function createLogo(s, size) {
-  var el = document.createElement('div');
-  el.className = 'slogo ' + size;
-  el.style.background = s.color;
-  var sp = document.createElement('span');
-  sp.textContent = s.abbr || s.name.substring(0,2).toUpperCase();
-  el.appendChild(sp);
-  if (s.logo) {
-    var im = document.createElement('img');
-    im.src = s.logo;
-    im.onerror = function() { im.remove(); };
-    el.appendChild(im);
-  }
-  return el;
+function oSupModal(){document.getElementById('supModal').classList.add('open');}
+function cSupModal(){document.getElementById('supModal').classList.remove('open');}
+function openSupForm(){
+  cSupModal();
+  var a=document.createElement('a');
+  a.href=SUP_FORM_URL;
+  a.target='_blank';
+  a.rel='noopener';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){document.body.removeChild(a);},100);
 }
-
-function sGlow(c) {
-  document.getElementById('glow').style.background = 'radial-gradient(circle, ' + c + '28 0%, transparent 65%)';
+aplyC();
+function gPg(p){
+  document.querySelectorAll('.page').forEach(function(pg){pg.classList.remove('active');});
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nb-'+p).classList.add('active');
+  if(p==='saved')rFavs();if(p==='search')dSrch();
+  window.scrollTo(0,0);
 }
-
-function playStation(index) {
-  sStat('loading');
-  if (index < 0 || index >= stations.length) return;
-  
-  currentStationIndex = index;
-  var s = stations[index];
-  
-  updateNPInfo(s);
-  sGlow(s.color);
-  
-  var ri = recent.indexOf(index);
-  if (ri >= 0) recent.splice(ri, 1);
-  recent.unshift(index);
-  if (recent.length > 10) recent.pop();
-  
-  if (hls) { hls.destroy(); hls = null; }
-  audio.pause();
-  audio.src = '';
-  
-  if (!isPlaying) {
-    isPlaying = true;
-    document.getElementById('playBtn').textContent = '⏸';
-  }
-  
-  document.querySelectorAll('.bar').forEach(b => b.style.animationPlayState = 'running');
-  
-  var stream = s.stream;
-  if (!stream) {
-    sStat('error', 'Stream no disponible');
-    return;
-  }
-  
-  if (stream.indexOf('.m3u8') >= 0) {
-    if (Hls.isSupported()) {
-      hls = new Hls({ enableWorker: false });
-      hls.loadSource(stream);
-      hls.attachMedia(audio);
-      hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        audio.play()
-          .then(function() { sStat('ok'); })
-          .catch(function(e) { 
-            sStat('error', 'Tocá ▶ para reproducir');
-          });
-      });
-      hls.on(Hls.Events.ERROR, function(e, d) {
-        if (d.fatal) sStat('error', 'Stream no disponible');
-      });
-    } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-      audio.src = stream;
-      audio.play()
-        .then(function() { sStat('ok'); })
-        .catch(function() { sStat('error', 'Tocá ▶'); });
-    } else {
-      sStat('error', 'Formato no soportado');
-    }
-  } else {
-    audio.src = stream;
-    audio.onerror = function() { 
-      sStat('error', 'Stream no disponible');
-    };
-    audio.oncanplay = function() {
-      audio.play()
-        .then(function() { 
-          sStat('ok'); 
-          audio.oncanplay = null;
-        })
-        .catch(function() { 
-          sStat('error', 'Tocá ▶ para reproducir');
-        });
-    };
+function tTheme(){var l=document.body.classList.toggle('light');document.getElementById('themeTog').classList.toggle('on',l);cfg.theme=l?'light':'dark';try{localStorage.setItem('snt_cfg',JSON.stringify(cfg));}catch(e){}}
+function setSleep(m,btn){
+  document.querySelectorAll('.sbn').forEach(function(b){b.classList.remove('active');});
+  if(slpInt){clearInterval(slpInt);slpInt=null;}
+  if(m===0){document.getElementById('slpVal').textContent='—';document.getElementById('slpSub').textContent='Desactivado';return;}
+  btn.classList.add('active');slpLeft=m*60;uSlp();
+  document.getElementById('slpSub').textContent='Apaga en '+m+' min';
+  slpInt=setInterval(function(){slpLeft--;uSlp();if(slpLeft<=0){clearInterval(slpInt);slpInt=null;audio.pause();vPlay(false);playing=false;document.getElementById('playBtn').textContent='▶';document.getElementById('slpVal').textContent='—';document.getElementById('slpSub').textContent='Desactivado';document.querySelectorAll('.sbn').forEach(function(b){b.classList.remove('active');});}},1000);
+}
+function uSlp(){var m=Math.floor(slpLeft/60),s=slpLeft%60;document.getElementById('slpVal').textContent=m+':'+(s<10?'0':'')+s;}
+function shWA(){var u=appC.url||window.location.href;window.open('https://wa.me/?text='+encodeURIComponent('Escuchá radios paraguayas en vivo con Sintonía 📻 '+u),'_blank');}
+function cpLink(){var u=appC.url||window.location.href;if(navigator.clipboard){navigator.clipboard.writeText(u).catch(function(){});}var b=document.getElementById('cpLnkBtn');b.textContent='¡Copiado!';setTimeout(function(){b.textContent='Copiar';},2000);}
+function dlAPK(){if(appC.apk){window.open(appC.apk,'_blank');}else{alert('El enlace del APK no está configurado. Ingresá al panel admin.');}}
+function donC(){
+  try{var d=localStorage.getItem('snt_don');if(d)return JSON.parse(d);}catch(e){}
+  return {btc:'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',pp:'paypal.me/tucuenta',bank:'Alias: SINTONÍA.PY',tigo:'+595 9XX XXX XXX'};
+}
+function applyDon(){
+  var d=donC();
+  var btc=document.getElementById('d-btc');if(btc)btc.textContent=d.btc||'';
+  var pp=document.getElementById('d-pp');if(pp)pp.textContent=d.pp||'';
+  var bk=document.getElementById('d-bank');if(bk)bk.textContent=d.bank||'';
+  var tg=document.getElementById('d-tigo');if(tg)tg.textContent=d.tigo||'';
+}
+function sDonCfg(e){
+  var d={
+    btc:document.getElementById('fd-btc').value.trim(),
+    pp:document.getElementById('fd-pp').value.trim(),
+    bank:document.getElementById('fd-bank').value.trim(),
+    tigo:document.getElementById('fd-tigo').value.trim()
+  };
+  try{localStorage.setItem('snt_don',JSON.stringify(d));}catch(ex){}
+  applyDon();
+  var b=e.target;b.textContent='Guardando...';b.style.background='#555';
+  saveToGitHub(function(ok){
+    b.textContent=ok?'✓ Guardado en la nube':'⚠ Error nube (guardado local)';
+    b.style.background=ok?'#1B5E20':'#8B4000';
+    setTimeout(function(){b.textContent='Guardar datos de donación';b.style.background='';},3000);
+  });
+}
+function opPP(){
+  var url=donC().pp||'https://paypal.me/tucuenta';
+  if(url.indexOf('http')<0) url='https://'+url;
+  var a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';
+  document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);},100);
+}
+function cpDon(id,btn){var t=document.getElementById(id).textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).catch(function(){});}btn.textContent='¡Copiado!';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copied');},2000);}
+var taps=0,tTmr=null;
+function sTap(){taps++;clearTimeout(tTmr);if(taps>=5){taps=0;oPw();}else{tTmr=setTimeout(function(){taps=0;},3000);}}
+function oPw(){document.getElementById('pwIn').value='';document.getElementById('pwIn').classList.remove('err','shake');document.getElementById('pwOv').classList.add('open');setTimeout(function(){document.getElementById('pwIn').focus();},300);}
+function clsPw(){document.getElementById('pwOv').classList.remove('open');taps=0;}
+function chkPw(){var v=document.getElementById('pwIn').value;if(v===PASS){clsPw();oAdm();}else{var i=document.getElementById('pwIn');i.classList.add('err','shake');setTimeout(function(){i.classList.remove('shake');i.value='';},500);}}
+document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')chkPw();});
+function oAdm(){
+  document.getElementById('admOv').classList.add('open');
+  document.getElementById('fa-url').value=appC.url||'';
+  document.getElementById('fa-apk').value=appC.apk||'';
+  document.getElementById('fa-form').value=appC.form||'';
+  var don=donC();
+  document.getElementById('fd-btc').value=don.btc||'';
+  document.getElementById('fd-pp').value=don.pp||'';
+  document.getElementById('fd-bank').value=don.bank||'';
+  document.getElementById('fd-tigo').value=don.tigo||'';
+  rAdmList();uClr();
+}
+function clsAdm(){document.getElementById('admOv').classList.remove('open');}
+function admOut(e){if(e.target===document.getElementById('admOv'))clsAdm();}
+function uClr(){var c=document.getElementById('fk').value;document.getElementById('cpv').style.background=c;document.getElementById('chx').textContent=c;}
+function sAppCfg(e){
+  appC.url=document.getElementById('fa-url').value.trim();
+  appC.apk=document.getElementById('fa-apk').value.trim();
+  appC.form=document.getElementById('fa-form').value.trim();
+  try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(ex){}
+  aplyApp();
+  var b=e.target;b.textContent='Guardando...';b.style.background='#555';
+  saveToGitHub(function(ok){
+    b.textContent=ok?'✓ Guardado en la nube':'⚠ Error nube (guardado local)';
+    b.style.background=ok?'#1B5E20':'#8B4000';
+    setTimeout(function(){b.textContent='Guardar configuración';b.style.background='';},3000);
+  });
+}
+function abv(n){var w=n.trim().split(/\s+/);if(w.length===1)return n.substring(0,3).toUpperCase();return w.map(function(x){return x[0];}).join('').substring(0,3).toUpperCase();}
+function addSt(){
+  var nm=document.getElementById('fn').value.trim(),fr=document.getElementById('ff').value.trim(),st=document.getElementById('fs').value.trim(),lg=document.getElementById('fl').value.trim(),cl=document.getElementById('fk').value;
+  if(!nm||!st){alert('Nombre y stream son obligatorios.');return;}
+  stations.push({name:nm,freq:fr,logo:lg||null,abbr:abv(nm),color:cl,stream:st,fav:false});
+  svSt();
+  ['fn','ff','fs','fl'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('fk').value='#E8003D';uClr();
+  rList();rFavs();rAdmList();
+  if(stations.length===1)iPlayer();
+  // Guardar en GitHub con feedback
+  var btn=document.querySelector('.badd:last-of-type');
+  saveToGitHub(function(ok){
+    if(ok){showGHStatus('✓ Guardado en la nube');}
+    else{showGHStatus('⚠ Error al guardar en nube');}
+  });
+}
+function delSt(i){
+  if(!confirm('¿Eliminar "'+stations[i].name+'"?'))return;
+  if(i===cur){if(hls){hls.destroy();hls=null;}audio.pause();playing=false;document.getElementById('playBtn').textContent='▶';sStat('','');}
+  stations.splice(i,1);
+  if(cur>=stations.length)cur=Math.max(0,stations.length-1);
+  svSt();rList();rFavs();rAdmList();
+  if(stations.length>0)iPlayer();
+  saveToGitHub(function(ok){
+    if(ok){showGHStatus('✓ Eliminado de la nube');}
+    else{showGHStatus('⚠ Error al guardar en nube');}
+  });
+}
+function rAdmList(){var el=document.getElementById('admList');el.innerHTML='';if(!stations.length){el.innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px;padding:10px 0">Sin emisoras.</p>';return;}stations.forEach(function(s,i){var it=document.createElement('div');it.className='ai';var bg=document.createElement('div');bg.className='ab2';bg.style.background=s.color;if(s.logo){var im=document.createElement('img');im.src=s.logo;im.onerror=function(){im.remove();};bg.appendChild(im);}var sp=document.createElement('span');sp.textContent=s.abbr;sp.style.cssText='position:relative;z-index:1';bg.appendChild(sp);var inf=document.createElement('div');inf.style.flex='1';inf.style.minWidth='0';var an=document.createElement('div');an.className='ain';an.textContent=s.name;var af=document.createElement('div');af.className='ais';af.textContent=s.freq||'Sin frecuencia';inf.appendChild(an);inf.appendChild(af);var dl=document.createElement('button');dl.className='bdel';dl.textContent='Borrar';dl.onclick=(function(idx){return function(){delSt(idx);};})(i);it.appendChild(bg);it.appendChild(inf);it.appendChild(dl);el.appendChild(it);});}
+var vEl=document.getElementById('viz');
+for(var vi=0;vi<28;vi++){var vb=document.createElement('div');vb.className='bar';vb.style.setProperty('--lo',(0.04+Math.random()*.1).toFixed(2));vb.style.setProperty('--hi',(0.5+Math.random()*.5).toFixed(2));vb.style.setProperty('--d',(0.35+Math.random()*.65).toFixed(2)+'s');vb.style.setProperty('--del',(vi*.018).toFixed(3)+'s');vb.style.height='100%';vEl.appendChild(vb);}
+function vPlay(on){vEl.querySelectorAll('.bar').forEach(function(b){b.style.animationPlayState=on?'running':'paused';});}
+function mkLg(s,sc){var el=document.createElement('div');el.className='slogo '+sc;el.style.background=s.color;var sp=document.createElement('span');sp.textContent=s.abbr;el.appendChild(sp);if(s.logo){var im=document.createElement('img');im.src=s.logo;im.alt='';im.onerror=function(){im.remove();};el.appendChild(im);}return el;}
+function sGlow(c){document.getElementById('glow').style.background='radial-gradient(circle,'+c+'28 0%,transparent 65%)';}
+function sStat(t,m){var el=document.getElementById('statusBar');if(t==='loading')el.innerHTML='<div class="dl"><span></span><span></span><span></span></div><span>Conectando…</span>';else if(t==='error')el.innerHTML='<span class="etxt">⚠ '+(m||'Stream no disponible')+'</span>';else if(t==='ok')el.innerHTML='<span>▸ En vivo</span>';else el.innerHTML='';}
+function stType(u){if(!u)return 'direct';var v=u.toLowerCase().split('?')[0];if(v.indexOf('.m3u8')>=0)return 'hls';return 'direct';}
+function ldStn(idx){
+  cur=idx;var s=stations[idx];
+  var nl=document.getElementById('npLogo');nl.innerHTML='';nl.appendChild(mkLg(s,'lg'));
+  document.getElementById('npName').textContent=s.name;
+  document.getElementById('npFreq').textContent=s.freq||'';
+  uFavUI();sGlow(s.color);
+  var ri=recent.indexOf(idx);if(ri>=0)recent.splice(ri,1);recent.unshift(idx);if(recent.length>10)recent.pop();
+  if(hls){hls.destroy();hls=null;}
+  audio.pause();audio.src='';audio.onerror=null;audio.oncanplay=null;
+  vPlay(false);sStat('loading');playing=true;document.getElementById('playBtn').textContent='⏸';
+  if(stType(s.stream)==='hls'){
+    if(Hls.isSupported()){hls=new Hls({enableWorker:false});hls.loadSource(s.stream);hls.attachMedia(audio);hls.on(Hls.Events.MANIFEST_PARSED,function(){audio.play().then(function(){vPlay(true);sStat('ok');}).catch(function(){sStat('error','Tocá ▶ para reproducir');});});hls.on(Hls.Events.ERROR,function(e,d){if(d.fatal)sStat('error','Stream no disponible');});}
+    else if(audio.canPlayType('application/vnd.apple.mpegurl')){audio.src=s.stream;audio.play().then(function(){vPlay(true);sStat('ok');}).catch(function(){sStat('error','Tocá ▶');});}
+    else{sStat('error','HLS no soportado');}
+  }else{
+    audio.src=s.stream;
+    audio.onerror=function(){sStat('error','Stream no disponible');};
+    audio.oncanplay=function(){audio.play().then(function(){vPlay(true);sStat('ok');audio.oncanplay=null;}).catch(function(){sStat('error','Tocá ▶ para reproducir');});};
     audio.load();
   }
-  
-  renderCurrentView();
+  rList();rFavs();rRec();
+}
+function iPlayer(){if(!stations.length)return;var s=stations[0];var nl=document.getElementById('npLogo');nl.innerHTML='';nl.appendChild(mkLg(s,'lg'));document.getElementById('npName').textContent=s.name;document.getElementById('npFreq').textContent=s.freq||'';sGlow(s.color);}
+function tPlay(){if(!stations.length)return;if(!playing){playing=true;document.getElementById('playBtn').textContent='⏸';if(hls){audio.play().then(function(){vPlay(true);sStat('ok');});}else{ldStn(cur);}}else{playing=false;audio.pause();vPlay(false);sStat('','');document.getElementById('playBtn').textContent='▶';}}
+function tMute(){muted=!muted;audio.muted=muted;document.getElementById('volBtn').textContent=muted?'🔇':'🔊';}
+function pSt(){if(stations.length)ldStn((cur-1+stations.length)%stations.length);}
+function nSt(){if(stations.length)ldStn((cur+1)%stations.length);}
+function uFavUI(){var el=document.getElementById('npFav');var s=stations[cur];el.textContent=s&&s.fav?'♥':'♡';el.className='fav-btn'+(s&&s.fav?' on':'');}
+function tNF(){if(!stations.length)return;stations[cur].fav=!stations[cur].fav;svSt();uFavUI();rList();rFavs();}
+function tRF(i,el){stations[i].fav=!stations[i].fav;el.textContent=stations[i].fav?'♥':'♡';el.className='rfav'+(stations[i].fav?' on':'');if(i===cur)uFavUI();svSt();rFavs();}
+function mkRow(s,i,act){
+  var row=document.createElement('div');row.className='srow'+(act?' active':'');row.onclick=function(){ldStn(i);};
+  row.appendChild(mkLg(s,'sm'));
+  var inf=document.createElement('div');inf.className='row-info';
+  var nm=document.createElement('div');nm.className='rn';nm.textContent=s.name;
+  var sb=document.createElement('div');sb.className='rs';sb.textContent=s.freq||'';
+  inf.appendChild(nm);inf.appendChild(sb);row.appendChild(inf);
+  var rr=document.createElement('div');rr.className='rr';
+  if(act){var mv=document.createElement('div');mv.className='mviz';[['0.2','1','0.5s','0s'],['0.4','0.8','0.7s','0.1s'],['0.1','0.9','0.4s','0.2s']].forEach(function(a){var mb=document.createElement('div');mb.className='mbar';mb.style.setProperty('--lo',a[0]);mb.style.setProperty('--hi',a[1]);mb.style.setProperty('--d',a[2]);mb.style.setProperty('--del',a[3]);mb.style.height='100%';mv.appendChild(mb);});rr.appendChild(mv);}
+  var fv=document.createElement('span');fv.className='rfav'+(s.fav?' on':'');fv.textContent=s.fav?'♥':'♡';fv.onclick=(function(idx,el){return function(e){e.stopPropagation();tRF(idx,el);};})(i,fv);rr.appendChild(fv);row.appendChild(rr);
+  return row;
+}
+function rList(){var el=document.getElementById('stList');el.innerHTML='';if(!stations.length){var p=document.createElement('p');p.className='em';p.textContent='Tocá el logo 5 veces para agregar emisoras.';el.appendChild(p);return;}stations.forEach(function(s,i){el.appendChild(mkRow(s,i,i===cur));});}
+function rRec(){var el=document.getElementById('recList');el.innerHTML='';if(!recent.length){var p=document.createElement('p');p.className='em';p.textContent='Todavía no escuchaste ninguna emisora.';el.appendChild(p);return;}recent.forEach(function(i){if(stations[i])el.appendChild(mkRow(stations[i],i,i===cur));});}
+function rFavs(){var grid=document.getElementById('favGrid');grid.innerHTML='';var favs=stations.filter(function(s){return s.fav;});document.getElementById('savSub').textContent=favs.length+' emisora'+(favs.length!==1?'s':'')+' guardada'+(favs.length!==1?'s':'');if(!favs.length){var div=document.createElement('div');div.className='esav';div.innerHTML='<div style="font-size:36px;opacity:.3;margin-bottom:12px">♡</div>Todavía no guardaste ninguna emisora.<br>Tocá ♡ en cualquier emisora.';grid.appendChild(div);return;}favs.forEach(function(s){var idx=stations.indexOf(s);var t=document.createElement('div');t.className='ft';t.onclick=function(){ldStn(idx);gPg('home');};t.appendChild(mkLg(s,'xs'));var n=document.createElement('div');n.className='ftn';n.textContent=s.name;var f=document.createElement('div');f.className='ftf';f.textContent=s.freq||'';t.appendChild(n);t.appendChild(f);grid.appendChild(t);});}
+function dSrch(){var q=document.getElementById('si').value.trim().toLowerCase();document.getElementById('sc').style.display=q?'block':'none';var res=document.getElementById('srchRes');res.innerHTML='';if(!q){var p=document.createElement('p');p.className='em';p.textContent='Escribí para buscar…';res.appendChild(p);return;}var found=stations.filter(function(s){return s.name.toLowerCase().indexOf(q)>=0||(s.freq&&s.freq.toLowerCase().indexOf(q)>=0);});if(!found.length){var p2=document.createElement('p');p2.className='em';p2.textContent='Sin resultados para "'+q+'"';res.appendChild(p2);return;}found.forEach(function(s){var i=stations.indexOf(s);res.appendChild(mkRow(s,i,i===cur));});}
+function cSrch(){document.getElementById('si').value='';dSrch();}
+function hTab(t,el){document.querySelectorAll('.tabs .tab').forEach(function(x){x.classList.remove('active');});el.classList.add('active');document.getElementById('ht-all').style.display=t==='all'?'block':'none';document.getElementById('ht-rec').style.display=t==='rec'?'block':'none';if(t==='rec')rRec();}
+iPlayer();rList();rFavs();applyDon();
+// Cargar datos desde GitHub al iniciar (funciona cuando se sirve desde https://)
+loadFromGitHub();
+function showGHStatus(msg){
+  var el=document.getElementById('ghStatus');
+  el.textContent=msg;
+  el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},3000);
 }
 
-function tPlay() {
-  if (!stations.length) return;
-  
-  if (isPlaying) {
-    isPlaying = false;
-    document.getElementById('playBtn').textContent = '▶';
-    document.querySelectorAll('.bar').forEach(b => b.style.animationPlayState = 'paused');
+// ═══════════════════════════════════
+// BACKGROUND AUDIO — Mantiene el audio
+// activo cuando la pantalla se bloquea
+// o se cambia de app
+// ═══════════════════════════════════
+var silentCtx = null;
+var silentNode = null;
+
+function startSilentAudio() {
+  try {
+    if (silentCtx) return;
+    silentCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Crea un buffer de silencio de 0.5 seg que se repite
+    var bufferSize = silentCtx.sampleRate * 0.5;
+    var buffer = silentCtx.createBuffer(1, bufferSize, silentCtx.sampleRate);
+    var source = silentCtx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    source.connect(silentCtx.destination);
+    source.start();
+    silentNode = source;
+  } catch(e) {
+    console.log('Silent audio error:', e);
+  }
+}
+
+function stopSilentAudio() {
+  try {
+    if (silentNode) { silentNode.stop(); silentNode = null; }
+    if (silentCtx) { silentCtx.close(); silentCtx = null; }
+  } catch(e) {}
+}
+
+// Media Session API — controles en pantalla de bloqueo
+function setupMediaSession(stationName, stationFreq) {
+  if (!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: stationName || 'Sintonía',
+    artist: stationFreq || 'Radio en vivo',
+    album: 'Sintonía — Radio Paraguay',
+    artwork: [
+      { src: 'https://master3030.github.io/sintonia-data/icon.png', sizes: '192x192', type: 'image/png' }
+    ]
+  });
+  navigator.mediaSession.setActionHandler('play', function() {
+    if (audio.paused) { audio.play(); }
+    navigator.mediaSession.playbackState = 'playing';
+  });
+  navigator.mediaSession.setActionHandler('pause', function() {
     audio.pause();
-    sStat('');
-  } else {
-    isPlaying = true;
-    document.getElementById('playBtn').textContent = '⏸';
-    document.querySelectorAll('.bar').forEach(b => b.style.animationPlayState = 'running');
-    sStat('loading');
-    
-    if (audio.src) {
-      audio.play().catch(function() {});
-    } else {
+    navigator.mediaSession.playbackState = 'paused';
+  });
+  navigator.mediaSession.setActionHandler('previoustrack', function() {
+    pSt();
+  });
+  navigator.mediaSession.setActionHandler('nexttrack', function() {
+    nSt();
+  });
+  navigator.mediaSession.playbackState = 'playing';
+}
+
+// Wake Lock API — evita que la pantalla suspenda el JS
+var wakeLockObj = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLockObj = await navigator.wakeLock.request('screen');
+      wakeLockObj.addEventListener('release', function() {
+        wakeLockObj = null;
+      });
+    }
+  } catch(e) {
+    console.log('WakeLock no disponible:', e);
+  }
+}
+
+// Cuando la página vuelve al foco — reactivar WakeLock
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    if (!wakeLockObj) requestWakeLock();
+    // Re-resume audio context si fue suspendido
+    if (silentCtx && silentCtx.state === 'suspended') {
+      silentCtx.resume();
+    }
+  }
+});
+
+// Interceptar playStation para agregar background support
+var _originalTPlay = tPlay;
+audio.addEventListener('play', function() {
+  startSilentAudio();
+  requestWakeLock();
+  // Actualizar Media Session
+  var s = stations[currentStationIndex] || {};
+  setupMediaSession(s.name, s.freq);
+  navigator.mediaSession && (navigator.mediaSession.playbackState = 'playing');
+});
+
+audio.addEventListener('pause', function() {
+  navigator.mediaSession && (navigator.mediaSession.playbackState = 'paused');
+});
+
+audio.addEventListener('ended', function() {
+  // Auto-reconectar si se cae el stream
+  setTimeout(function() {
+    if (isPlaying) {
       playStation(currentStationIndex);
     }
-  }
-}
-
-function pSt() {
-  if (stations.length) {
-    playStation((currentStationIndex - 1 + stations.length) % stations.length);
-  }
-}
-
-function nSt() {
-  if (stations.length) {
-    playStation((currentStationIndex + 1) % stations.length);
-  }
-}
-
-function tMute() {
-  audio.muted = !audio.muted;
-  document.getElementById('volBtn').textContent = audio.muted ? '🔇' : '🔊';
-}
-
-// ═══════════════════════════════════
-// RENDERIZADO
-// ═══════════════════════════════════
-function renderCurrentView() {
-  if (currentTab === 'all') renderAllStations();
-  else if (currentTab === 'recent') renderRecentStations();
-  else if (currentTab === 'favorites') renderFavoritesList();
-  
-  if (stations[currentStationIndex]) {
-    var isFav = isFavorite(stations[currentStationIndex].name, stations[currentStationIndex].freq);
-    var favBtn = document.getElementById('npFav');
-    favBtn.textContent = isFav ? '♥' : '♡';
-    favBtn.className = 'fav-btn' + (isFav ? ' on' : '');
-  }
-}
-
-function renderAllStations() {
-  var container = document.getElementById('stationsContainer');
-  if (!container) return;
-  
-  if (!stations.length) {
-    container.innerHTML = '<p class="em">Tocá el logo 5 veces para agregar emisoras.</p>';
-    return;
-  }
-  
-  var html = '';
-  stations.forEach(function(s, i) {
-    var isActive = (i === currentStationIndex);
-    var isFav = isFavorite(s.name, s.freq);
-    
-    html += '<div class="srow' + (isActive ? ' active' : '') + '" onclick="playStation(' + i + ')">';
-    html += '  <div class="slogo sm" style="background:' + s.color + ';">';
-    html += '    <span>' + (s.abbr || s.name.substring(0,2).toUpperCase()) + '</span>';
-    if (s.logo) html += '    <img src="' + s.logo + '" onerror="this.remove()">';
-    html += '  </div>';
-    html += '  <div class="row-info">';
-    html += '    <div class="rn">' + s.name + '</div>';
-    html += '    <div class="rs">' + (s.freq || '') + '</div>';
-    html += '  </div>';
-    html += '  <div class="rr">';
-    if (isActive) {
-      html += '    <div class="mviz">';
-      html += '      <div class="mbar" style="--lo:0.2;--hi:1;--d:0.5s;--del:0s"></div>';
-      html += '      <div class="mbar" style="--lo:0.4;--hi:0.8;--d:0.7s;--del:0.1s"></div>';
-      html += '      <div class="mbar" style="--lo:0.1;--hi:0.9;--d:0.4s;--del:0.2s"></div>';
-      html += '    </div>';
-    }
-    html += '    <span class="rfav' + (isFav ? ' on' : '') + '" onclick="event.stopPropagation(); toggleFavoriteFromList(' + i + ')">' + (isFav ? '♥' : '♡') + '</span>';
-    html += '  </div>';
-    html += '</div>';
-  });
-  
-  container.innerHTML = html;
-}
-
-function renderRecentStations() {
-  var container = document.getElementById('stationsContainer');
-  if (!container) return;
-  
-  if (!recent.length) {
-    container.innerHTML = '<p class="em">Todavía no escuchaste ninguna emisora.</p>';
-    return;
-  }
-  
-  var html = '';
-  recent.forEach(function(i) {
-    if (!stations[i]) return;
-    var s = stations[i];
-    var isActive = (i === currentStationIndex);
-    var isFav = isFavorite(s.name, s.freq);
-    
-    html += '<div class="srow' + (isActive ? ' active' : '') + '" onclick="playStation(' + i + ')">';
-    html += '  <div class="slogo sm" style="background:' + s.color + ';">';
-    html += '    <span>' + (s.abbr || s.name.substring(0,2).toUpperCase()) + '</span>';
-    if (s.logo) html += '    <img src="' + s.logo + '" onerror="this.remove()">';
-    html += '  </div>';
-    html += '  <div class="row-info">';
-    html += '    <div class="rn">' + s.name + '</div>';
-    html += '    <div class="rs">' + (s.freq || '') + '</div>';
-    html += '  </div>';
-    html += '  <div class="rr">';
-    if (isActive) {
-      html += '    <div class="mviz">';
-      html += '      <div class="mbar" style="--lo:0.2;--hi:1;--d:0.5s;--del:0s"></div>';
-      html += '      <div class="mbar" style="--lo:0.4;--hi:0.8;--d:0.7s;--del:0.1s"></div>';
-      html += '      <div class="mbar" style="--lo:0.1;--hi:0.9;--d:0.4s;--del:0.2s"></div>';
-      html += '    </div>';
-    }
-    html += '    <span class="rfav' + (isFav ? ' on' : '') + '" onclick="event.stopPropagation(); toggleFavoriteFromList(' + i + ')">' + (isFav ? '♥' : '♡') + '</span>';
-    html += '  </div>';
-    html += '</div>';
-  });
-  
-  container.innerHTML = html;
-}
-
-function renderFavoritesList() {
-  var container = document.getElementById('stationsContainer');
-  if (!container) return;
-  
-  if (!favorites.length) {
-    container.innerHTML = '<p class="em">⭐ No tenés favoritas aún<br><small>Tocá ♡ en cualquier emisora para agregarla</small></p>';
-    return;
-  }
-  
-  var html = '';
-  favorites.forEach(function(s) {
-    var stationIndex = stations.findIndex(st => st.name === s.name && st.freq === s.freq);
-    if (stationIndex === -1) return;
-    
-    html += '<div class="srow" onclick="playStation(' + stationIndex + ')">';
-    html += '  <div class="slogo sm" style="background:' + s.color + ';">';
-    html += '    <span>' + (s.abbr || s.name.substring(0,2).toUpperCase()) + '</span>';
-    if (s.logo) html += '    <img src="' + s.logo + '" onerror="this.remove()">';
-    html += '  </div>';
-    html += '  <div class="row-info">';
-    html += '    <div class="rn">' + s.name + '</div>';
-    html += '    <div class="rs">' + (s.freq || '') + '</div>';
-    html += '  </div>';
-    html += '  <div class="rr">';
-    html += '    <span class="rfav on" onclick="event.stopPropagation(); toggleFavoriteFromStation(' + stationIndex + ')">♥</span>';
-    html += '  </div>';
-    html += '</div>';
-  });
-  
-  container.innerHTML = html;
-}
-
-function toggleFavoriteFromList(index) {
-  if (index >= 0 && stations[index]) {
-    toggleFavorite(stations[index]);
-  }
-}
-
-function toggleFavoriteFromStation(index) {
-  if (index >= 0 && stations[index]) {
-    toggleFavorite(stations[index]);
-  }
-}
-
-function tNF() {
-  if (stations[currentStationIndex]) {
-    toggleFavorite(stations[currentStationIndex]);
-  }
-}
-
-// ═══════════════════════════════════
-// ADMIN - EDITOR DE ESTACIONES
-// ═══════════════════════════════════
-function openEditModal(index) {
-  editingIndex = index;
-  var s = stations[index];
-  
-  document.getElementById('edit-name').value = s.name || '';
-  document.getElementById('edit-freq').value = s.freq || '';
-  document.getElementById('edit-stream').value = s.stream || '';
-  document.getElementById('edit-logo').value = s.logo || '';
-  document.getElementById('edit-color').value = s.color || '#E8003D';
-  document.getElementById('edit-color-preview').style.background = s.color || '#E8003D';
-  document.getElementById('edit-abbr').value = s.abbr || s.name.substring(0,2).toUpperCase();
-  
-  document.getElementById('editModal').classList.add('open');
-}
-
-function closeEditModal() {
-  document.getElementById('editModal').classList.remove('open');
-  editingIndex = -1;
-}
-
-function saveEditStation() {
-  if (editingIndex < 0) return;
-  
-  stations[editingIndex] = {
-    name: document.getElementById('edit-name').value.trim(),
-    freq: document.getElementById('edit-freq').value.trim(),
-    stream: document.getElementById('edit-stream').value.trim(),
-    logo: document.getElementById('edit-logo').value.trim() || null,
-    color: document.getElementById('edit-color').value,
-    abbr: document.getElementById('edit-abbr').value.trim() || document.getElementById('edit-name').value.trim().substring(0,2).toUpperCase()
-  };
-  
-  closeEditModal();
-  renderAdminList();
-  saveToFirebase();
-}
-
-function renderAdminList() {
-  var el = document.getElementById('admList');
-  el.innerHTML = '';
-  
-  if (!stations.length) {
-    el.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:13px;padding:10px 0">Sin emisoras.</p>';
-    return;
-  }
-  
-  stations.forEach(function(s, i) {
-    var it = document.createElement('div');
-    it.className = 'ai';
-    
-    var bg = document.createElement('div');
-    bg.className = 'ab2';
-    bg.style.background = s.color;
-    
-    if (s.logo) {
-      var im = document.createElement('img');
-      im.src = s.logo;
-      im.onerror = function() { im.remove(); };
-      bg.appendChild(im);
-    }
-    
-    var sp = document.createElement('span');
-    sp.textContent = s.abbr || s.name.substring(0,2).toUpperCase();
-    sp.style.cssText = 'position:relative;z-index:1';
-    bg.appendChild(sp);
-    
-    var inf = document.createElement('div');
-    inf.style.flex = '1';
-    inf.style.minWidth = '0';
-    
-    var an = document.createElement('div');
-    an.className = 'ain';
-    an.textContent = s.name;
-    
-    var af = document.createElement('div');
-    af.className = 'ais';
-    af.textContent = s.freq || 'Sin frecuencia';
-    
-    inf.appendChild(an);
-    inf.appendChild(af);
-    
-    var btnDiv = document.createElement('div');
-    btnDiv.style.display = 'flex';
-    btnDiv.style.gap = '4px';
-    
-    var editBtn = document.createElement('button');
-    editBtn.className = 'bdel';
-    editBtn.style.background = 'rgba(255,255,255,.1)';
-    editBtn.style.color = '#FFF';
-    editBtn.style.borderColor = 'rgba(255,255,255,.2)';
-    editBtn.textContent = '✏️';
-    editBtn.onclick = (function(idx) {
-      return function(e) {
-        e.stopPropagation();
-        openEditModal(idx);
-      };
-    })(i);
-    
-    var delBtn = document.createElement('button');
-    delBtn.className = 'bdel';
-    delBtn.textContent = '🗑️';
-    delBtn.onclick = (function(idx) {
-      return function(e) {
-        e.stopPropagation();
-        if (confirm('¿Eliminar "' + stations[idx].name + '"?')) {
-          if (idx === currentStationIndex) {
-            if (hls) hls.destroy();
-            audio.pause();
-            isPlaying = false;
-          }
-          stations.splice(idx, 1);
-          if (currentStationIndex >= stations.length) currentStationIndex = Math.max(0, stations.length - 1);
-          renderAdminList();
-          renderAllStations();
-          saveToFirebase();
-          if (stations.length) playStation(currentStationIndex);
-        }
-      };
-    })(i);
-    
-    btnDiv.appendChild(editBtn);
-    btnDiv.appendChild(delBtn);
-    
-    it.appendChild(bg);
-    it.appendChild(inf);
-    it.appendChild(btnDiv);
-    el.appendChild(it);
-  });
-}
-
-function addSt() {
-  var nm = document.getElementById('fn').value.trim();
-  var fr = document.getElementById('ff').value.trim();
-  var st = document.getElementById('fs').value.trim();
-  var lg = document.getElementById('fl').value.trim();
-  var cl = document.getElementById('fk').value;
-  
-  if (!nm || !st) {
-    alert('Nombre y stream son obligatorios.');
-    return;
-  }
-  
-  stations.push({
-    name: nm,
-    freq: fr,
-    stream: st,
-    logo: lg || null,
-    color: cl,
-    abbr: abv(nm)
-  });
-  
-  document.getElementById('fn').value = '';
-  document.getElementById('ff').value = '';
-  document.getElementById('fs').value = '';
-  document.getElementById('fl').value = '';
-  document.getElementById('fk').value = '#E8003D';
-  uClr();
-  
-  renderAdminList();
-  renderAllStations();
-  saveToFirebase();
-}
-
-function abv(n) {
-  var w = n.trim().split(/\s+/);
-  if (w.length === 1) return n.substring(0,3).toUpperCase();
-  return w.map(function(x) { return x[0]; }).join('').substring(0,3).toUpperCase();
-}
-
-function uClr() {
-  var c = document.getElementById('fk').value;
-  document.getElementById('cpv').style.background = c;
-  document.getElementById('chx').textContent = c;
-}
-
-// ═══════════════════════════════════
-// NAVEGACIÓN Y UTILIDADES
-// ═══════════════════════════════════
-function gPg(p) {
-  document.querySelectorAll('.page').forEach(function(pg) { pg.classList.remove('active'); });
-  document.querySelectorAll('.nb').forEach(function(b) { b.classList.remove('active'); });
-  document.getElementById('page-' + p).classList.add('active');
-  document.getElementById('nb-' + p).classList.add('active');
-  
-  if (p === 'saved') renderFavoritesGrid();
-  if (p === 'search') dSrch();
-  window.scrollTo(0, 0);
-}
-
-function renderFavoritesGrid() {
-  var grid = document.getElementById('favGrid');
-  grid.innerHTML = '';
-  
-  if (!favorites.length) {
-    var div = document.createElement('div');
-    div.className = 'esav';
-    div.innerHTML = '<div style="font-size:36px;opacity:.3;margin-bottom:12px">♡</div>Todavía no guardaste ninguna emisora.<br>Tocá ♡ en cualquier emisora.';
-    grid.appendChild(div);
-    return;
-  }
-  
-  favorites.forEach(function(s) {
-    var stationIndex = stations.findIndex(st => st.name === s.name && st.freq === s.freq);
-    if (stationIndex === -1) return;
-    
-    var t = document.createElement('div');
-    t.className = 'ft';
-    t.onclick = function() {
-      playStation(stationIndex);
-      gPg('home');
-    };
-    
-    var logo = createLogo(s, 'xs');
-    t.appendChild(logo);
-    
-    var n = document.createElement('div');
-    n.className = 'ftn';
-    n.textContent = s.name;
-    
-    var f = document.createElement('div');
-    f.className = 'ftf';
-    f.textContent = s.freq || '';
-    
-    t.appendChild(n);
-    t.appendChild(f);
-    grid.appendChild(t);
-  });
-}
-
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelectorAll('.tabs .tab')[tab === 'all' ? 0 : tab === 'recent' ? 1 : 2].classList.add('active');
-  renderCurrentView();
-}
-
-function dSrch() {
-  var q = document.getElementById('si').value.trim().toLowerCase();
-  document.getElementById('sc').style.display = q ? 'block' : 'none';
-  var res = document.getElementById('srchRes');
-  res.innerHTML = '';
-  
-  if (!q) {
-    res.innerHTML = '<p class="em">Escribí para buscar…</p>';
-    return;
-  }
-  
-  var found = stations.filter(function(s) {
-    return s.name.toLowerCase().indexOf(q) >= 0 || (s.freq && s.freq.toLowerCase().indexOf(q) >= 0);
-  });
-  
-  if (!found.length) {
-    res.innerHTML = '<p class="em">Sin resultados para "' + q + '"</p>';
-    return;
-  }
-  
-  found.forEach(function(s) {
-    var i = stations.indexOf(s);
-    var isFav = isFavorite(s.name, s.freq);
-    
-    var row = document.createElement('div');
-    row.className = 'srow';
-    row.onclick = function() { playStation(i); gPg('home'); };
-    
-    var logoDiv = document.createElement('div');
-    logoDiv.className = 'slogo sm';
-    logoDiv.style.background = s.color;
-    var sp = document.createElement('span');
-    sp.textContent = s.abbr || s.name.substring(0,2).toUpperCase();
-    logoDiv.appendChild(sp);
-    if (s.logo) {
-      var im = document.createElement('img');
-      im.src = s.logo;
-      im.onerror = function() { im.remove(); };
-      logoDiv.appendChild(im);
-    }
-    
-    var infoDiv = document.createElement('div');
-    infoDiv.className = 'row-info';
-    var nameDiv = document.createElement('div');
-    nameDiv.className = 'rn';
-    nameDiv.textContent = s.name;
-    var freqDiv = document.createElement('div');
-    freqDiv.className = 'rs';
-    freqDiv.textContent = s.freq || '';
-    infoDiv.appendChild(nameDiv);
-    infoDiv.appendChild(freqDiv);
-    
-    var rrDiv = document.createElement('div');
-    rrDiv.className = 'rr';
-    var favSpan = document.createElement('span');
-    favSpan.className = 'rfav' + (isFav ? ' on' : '');
-    favSpan.textContent = isFav ? '♥' : '♡';
-    favSpan.onclick = function(e) {
-      e.stopPropagation();
-      toggleFavorite(s);
-    };
-    rrDiv.appendChild(favSpan);
-    
-    row.appendChild(logoDiv);
-    row.appendChild(infoDiv);
-    row.appendChild(rrDiv);
-    res.appendChild(row);
-  });
-}
-
-function cSrch() {
-  document.getElementById('si').value = '';
-  dSrch();
-}
-
-// ═══════════════════════════════════
-// ADMIN - ACCESO
-// ═══════════════════════════════════
-var taps = 0, tTmr = null;
-
-function sTap() {
-  taps++;
-  clearTimeout(tTmr);
-  if (taps >= 5) {
-    taps = 0;
-    openPassword();
-  } else {
-    tTmr = setTimeout(function() { taps = 0; }, 3000);
-  }
-}
-
-function openPassword() {
-  document.getElementById('pwIn').value = '';
-  document.getElementById('pwIn').classList.remove('err', 'shake');
-  document.getElementById('pwOv').classList.add('open');
-  setTimeout(function() { document.getElementById('pwIn').focus(); }, 300);
-}
-
-function clsPw() {
-  document.getElementById('pwOv').classList.remove('open');
-  taps = 0;
-}
-
-function chkPw() {
-  var v = document.getElementById('pwIn').value;
-  if (v === PASS) {
-    clsPw();
-    openAdmin();
-  } else {
-    var i = document.getElementById('pwIn');
-    i.classList.add('err', 'shake');
-    setTimeout(function() { i.classList.remove('shake'); i.value = ''; }, 500);
-  }
-}
-
-document.getElementById('pwIn').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') chkPw();
+  }, 3000);
 });
 
-function openAdmin() {
-  document.getElementById('admOv').classList.add('open');
-  document.getElementById('fa-url').value = appC.url || '';
-  document.getElementById('fa-apk').value = appC.apk || '';
-  document.getElementById('fa-form').value = SUP_FORM_URL || '';
-  
-  var don = getDon();
-  document.getElementById('fd-btc').value = don.btc || '';
-  document.getElementById('fd-pp').value = don.pp || '';
-  document.getElementById('fd-bank').value = don.bank || '';
-  document.getElementById('fd-tigo').value = don.tigo || '';
-  
-  renderAdminList();
-  uClr();
-}
-
-function clsAdm() {
-  document.getElementById('admOv').classList.remove('open');
-}
-
-function admOut(e) {
-  if (e.target === document.getElementById('admOv')) clsAdm();
-}
-
-function getDon() {
-  try {
-    var d = localStorage.getItem('snt_don');
-    return d ? JSON.parse(d) : {btc:'',pp:'',bank:'',tigo:''};
-  } catch(e) {
-    return {btc:'',pp:'',bank:'',tigo:''};
-  }
-}
-
-function applyDon() {
-  var d = getDon();
-  var btc = document.getElementById('d-btc'); if (btc) btc.textContent = d.btc || '';
-  var pp = document.getElementById('d-pp'); if (pp) pp.textContent = d.pp || '';
-  var bk = document.getElementById('d-bank'); if (bk) bk.textContent = d.bank || '';
-}
-
-function sDonCfg(e) {
-  var d = {
-    btc: document.getElementById('fd-btc').value.trim(),
-    pp: document.getElementById('fd-pp').value.trim(),
-    bank: document.getElementById('fd-bank').value.trim(),
-    tigo: document.getElementById('fd-tigo').value.trim()
-  };
-  
-  try { localStorage.setItem('snt_don', JSON.stringify(d)); } catch(ex) {}
-  applyDon();
-  
-  var btn = e.target;
-  btn.textContent = 'Guardando...';
-  btn.style.background = '#555';
-  
-  saveToFirebase(function(ok) {
-    btn.textContent = ok ? '✓ Guardado en la nube' : '⚠ Error nube (guardado local)';
-    btn.style.background = ok ? '#1B5E20' : '#8B4000';
-    setTimeout(function() {
-      btn.textContent = 'Guardar datos de donación';
-      btn.style.background = '';
-    }, 3000);
-  });
-}
-
-function sAppCfg(e) {
-  appC.url = document.getElementById('fa-url').value.trim();
-  appC.apk = document.getElementById('fa-apk').value.trim();
-  SUP_FORM_URL = document.getElementById('fa-form').value.trim();
-  
-  try { localStorage.setItem('snt_app', JSON.stringify(appC)); } catch(ex) {}
-  
-  var btn = e.target;
-  btn.textContent = 'Guardando...';
-  btn.style.background = '#555';
-  
-  saveToFirebase(function(ok) {
-    btn.textContent = ok ? '✓ Guardado en la nube' : '⚠ Error nube (guardado local)';
-    btn.style.background = ok ? '#1B5E20' : '#8B4000';
-    setTimeout(function() {
-      btn.textContent = 'Guardar configuración';
-      btn.style.background = '';
-    }, 3000);
-  });
-}
-
-function opPP() {
-  var url = getDon().pp || 'https://paypal.me/tucuenta';
-  if (url.indexOf('http') < 0) url = 'https://' + url;
-  window.open(url, '_blank');
-}
-
-function cpDon(id, btn) {
-  var t = document.getElementById(id).textContent;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(t).catch(function() {});
-  }
-  btn.textContent = '¡Copiado!';
-  btn.classList.add('copied');
-  setTimeout(function() {
-    btn.textContent = 'Copiar';
-    btn.classList.remove('copied');
-  }, 2000);
-}
-
-function setSleep(m, btn) {
-  document.querySelectorAll('.sbn').forEach(function(b) { b.classList.remove('active'); });
-  btn.classList.add('active');
-  document.getElementById('slpVal').textContent = m ? m + ' min' : '—';
-  document.getElementById('slpSub').textContent = m ? 'Apaga en ' + m + ' min' : 'Desactivado';
-}
-
-function sCfg() {
-  cfg.quality = document.getElementById('qualSel').value;
-  try { localStorage.setItem('snt_cfg', JSON.stringify(cfg)); } catch(e) {}
-}
-
-function tTheme() {
-  var l = document.body.classList.toggle('light');
-  document.getElementById('themeTog').classList.toggle('on', l);
-  cfg.theme = l ? 'light' : 'dark';
-  try { localStorage.setItem('snt_cfg', JSON.stringify(cfg)); } catch(e) {}
-}
-
-function shWA() {
-  var u = appC.url || window.location.href;
-  window.open('https://wa.me/?text=' + encodeURIComponent('Escuchá radios paraguayas en vivo con Sintonía 📻 ' + u), '_blank');
-}
-
-function cpLink() {
-  var u = appC.url || window.location.href;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(u).catch(function() {});
-  }
-  var btn = document.getElementById('cpLnkBtn');
-  btn.textContent = '¡Copiado!';
-  setTimeout(function() { btn.textContent = 'Copiar'; }, 2000);
-}
-
-function dlAPK() {
-  if (appC.apk) {
-    window.open(appC.apk, '_blank');
-  } else {
-    alert('El enlace del APK no está configurado. Ingresá al panel admin.');
-  }
-}
-
-function oSupModal() {
-  document.getElementById('supModal').classList.add('open');
-}
-
-function cSupModal() {
-  document.getElementById('supModal').classList.remove('open');
-}
-
-function openSupForm() {
-  cSupModal();
-  window.open(SUP_FORM_URL, '_blank');
-}
-
-function showStatus(msg) {
-  var el = document.getElementById('ghStatus');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(function() { el.classList.remove('show'); }, 3000);
-}
-
-// ═══════════════════════════════════
-// VISUALIZADOR
-// ═══════════════════════════════════
-var vEl = document.getElementById('viz');
-for (var vi = 0; vi < 28; vi++) {
-  var vb = document.createElement('div');
-  vb.className = 'bar';
-  vb.style.setProperty('--lo', (0.04 + Math.random() * 0.1).toFixed(2));
-  vb.style.setProperty('--hi', (0.5 + Math.random() * 0.5).toFixed(2));
-  vb.style.setProperty('--d', (0.35 + Math.random() * 0.65).toFixed(2) + 's');
-  vb.style.setProperty('--del', (vi * 0.018).toFixed(3) + 's');
-  vb.style.height = '100%';
-  vEl.appendChild(vb);
-}
-
-// ═══════════════════════════════════
-// INICIALIZACIÓN
-// ═══════════════════════════════════
-document.addEventListener('DOMContentLoaded', function() {
-  loadFromFirebase();
-  
-  try {
-    var uc = localStorage.getItem('snt_cfg');
-    if (uc) cfg = JSON.parse(uc);
-    document.getElementById('qualSel').value = cfg.quality || 'auto';
-    if (cfg.theme === 'light') {
-      document.body.classList.add('light');
-      document.getElementById('themeTog').classList.add('on');
-    }
-  } catch(e) {}
-  
-  applyDon();
-  document.getElementById('appUrl').textContent = appC.url || 'Configurá tu enlace en el panel admin';
-});
 </script>
 </body>
 </html>
+
