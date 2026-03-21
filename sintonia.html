@@ -356,14 +356,29 @@ var SINTONIA_DOC=db.collection('sintonia').doc('data');
 var PASS='sintonia2025';
 var DEF=[{name:'Radio Amor',freq:'95.9 FM',logo:'https://images.zeno.fm/9_4zOznEOVrBFTvspmaIFyXUAzdb7hAJOGmMMw-BWDg/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYjExMzA0OTgtYzY0Yi00YjlmLWEwMDItMTg1YjM1YTFlNDhhL2ltYWdlLz91PTE3MzY0OTQ3MTgwMDA.webp',abbr:'AM',color:'#7B1010',stream:'https://rds3.desdeparaguay.net/movamor/movamor.stream/playlist.m3u8',fav:false},{name:'Radio ANR',freq:'89.9 FM',logo:null,abbr:'ANR',color:'#0D3B6E',stream:'https://rds3.desdeparaguay.net/transanr/transanr.stream/playlist.m3u8',fav:false},{name:'Aranduka FM',freq:'87.9 FM',logo:'https://images.zeno.fm/IQFilEDPHAoXe9HvC7R-df2mJ_C-jIvMQolL7sOPzDE/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYWd4emZucGxibTh0YzNSaGRITnlNZ3NTQ2tGMWRHaERiR2xsYm5RWWdJRHdyc1BiamdnTUN4SU9VM1JoZEdsdmJsQnliMlpwYkdVWWdJRHczdnlQNVFzTW9nRUVlbVZ1YncvaW1hZ2UvP3U9MTY1ODY2NzU5NzAwMA.webp',abbr:'ARK',color:'#4A148C',stream:'https://rds3.desdeparaguay.net/movaranduka/movaranduka.stream/playlist.m3u8',fav:false}];
 function ldSt(){try{var s=localStorage.getItem('snt_st');if(s)return JSON.parse(s);}catch(e){}return DEF.map(function(x){return JSON.parse(JSON.stringify(x));});}
-function svSt(){try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}}
+function svSt(){
+  try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
+  // Guardar favoritos por separado para persistirlos
+  var favs=stations.filter(function(s){return s.fav;}).map(function(s){return s.name+'|'+(s.freq||'');});
+  try{localStorage.setItem('snt_favs',JSON.stringify(favs));}catch(e){}
+}
 function loadFromGitHub(){
   SINTONIA_DOC.get().then(function(doc){
     if(doc.exists){
       var data=doc.data();
       if(data.config){if(data.config.adminPassword)PASS=data.config.adminPassword;if(data.config.appUrl)appC.url=data.config.appUrl;if(data.config.apkUrl)appC.apk=data.config.apkUrl;if(data.config.supportForm)appC.form=data.config.supportForm;try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(e){}aplyApp();}
       if(data.donations){try{localStorage.setItem('snt_don',JSON.stringify(data.donations));}catch(e){}applyDon();}
-      if(data.stations&&data.stations.length>0){stations=data.stations.map(function(s){return{name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr||s.name.substring(0,3).toUpperCase(),color:s.color||'#333',stream:s.stream||'',fav:false};});try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}cur=0;iPlayer();rList();rFavs();rRec();}
+      if(data.stations&&data.stations.length>0){
+        // Cargar favoritos guardados localmente
+        var savedFavs=[];
+        try{var sf=localStorage.getItem('snt_favs');if(sf)savedFavs=JSON.parse(sf);}catch(e){}
+        stations=data.stations.map(function(s){
+          var key=s.name+'|'+(s.freq||'');
+          return{name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr||s.name.substring(0,3).toUpperCase(),color:s.color||'#333',stream:s.stream||'',fav:savedFavs.indexOf(key)>=0};
+        });
+        try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
+        cur=0;iPlayer();rList();rFavs();rRec();
+      }
     }
   }).catch(function(e){console.log('Firebase load error:',e);});
 }
