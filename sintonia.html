@@ -391,56 +391,8 @@ function saveToGitHub(callback){
 var stations=ldSt(),cur=0,playing=false,muted=false,hls=null,slpInt=null,slpLeft=0,recent=[];
 var audio=new Audio();audio.volume=0.85;
 
-// ═══════════════════════════════════
-// NORMALIZADOR DE VOLUMEN
-// Nivela el audio de todas las emisoras
-// ═══════════════════════════════════
-var audioCtx=null,gainNode=null,compressor=null,sourceNode=null,audioConnected=false;
-
-function setupAudioNormalizer(){
-  try{
-    // Solo inicializar una vez — createMediaElementSource no puede llamarse 2 veces
-    if(audioConnected)return;
-    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    sourceNode=audioCtx.createMediaElementSource(audio);
-    compressor=audioCtx.createDynamicsCompressor();
-    compressor.threshold.value=-24;
-    compressor.knee.value=30;
-    compressor.ratio.value=12;
-    compressor.attack.value=0.003;
-    compressor.release.value=0.25;
-    gainNode=audioCtx.createGain();
-    gainNode.gain.value=1.4;
-    sourceNode.connect(compressor);
-    compressor.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    audioConnected=true;
-    console.log('Normalizador activo');
-  }catch(e){
-    console.log('Normalizador no disponible:',e);
-    // Si falla el normalizador igual tiene que sonar
-    audioConnected=false;
-  }
-}
-
-function resumeAudioCtx(){
-  if(audioCtx&&audioCtx.state==='suspended'){
-    audioCtx.resume().catch(function(){});
-  }
-}
-
-// Activar al primer play
-audio.addEventListener('play',function(){
-  if(!audioConnected){
-    setupAudioNormalizer();
-  } else {
-    resumeAudioCtx();
-  }
-},true);
-
-document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible') resumeAudioCtx();
-});
+// Volumen por defecto
+audio.volume = 0.85;
 var appC={url:'',apk:'',form:''};try{var ac=localStorage.getItem('snt_app');if(ac)appC=JSON.parse(ac);}catch(e){}
 var cfg={quality:'auto',theme:'dark'};try{var uc=localStorage.getItem('snt_cfg');if(uc)cfg=JSON.parse(uc);}catch(e){}
 function sCfg(){cfg.quality=document.getElementById('qualSel').value;try{localStorage.setItem('snt_cfg',JSON.stringify(cfg));}catch(e){}}
