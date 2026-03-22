@@ -399,21 +399,18 @@ var audioCtx=null,gainNode=null,compressor=null,sourceNode=null,audioConnected=f
 
 function setupAudioNormalizer(){
   try{
+    // Solo inicializar una vez — createMediaElementSource no puede llamarse 2 veces
     if(audioConnected)return;
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    // Fuente desde el elemento audio
     sourceNode=audioCtx.createMediaElementSource(audio);
-    // Compresor dinámico — nivela volúmenes altos y bajos
     compressor=audioCtx.createDynamicsCompressor();
-    compressor.threshold.value=-24; // dB donde empieza a comprimir
-    compressor.knee.value=30;       // suavidad de la compresión
-    compressor.ratio.value=12;      // cuánto comprime (12:1)
-    compressor.attack.value=0.003;  // velocidad de reacción
-    compressor.release.value=0.25;  // velocidad de liberación
-    // Ganancia de salida — amplifica señales bajas
+    compressor.threshold.value=-24;
+    compressor.knee.value=30;
+    compressor.ratio.value=12;
+    compressor.attack.value=0.003;
+    compressor.release.value=0.25;
     gainNode=audioCtx.createGain();
-    gainNode.gain.value=1.4;        // boost general
-    // Conectar: audio → compresor → ganancia → salida
+    gainNode.gain.value=1.4;
     sourceNode.connect(compressor);
     compressor.connect(gainNode);
     gainNode.connect(audioCtx.destination);
@@ -421,20 +418,28 @@ function setupAudioNormalizer(){
     console.log('Normalizador activo');
   }catch(e){
     console.log('Normalizador no disponible:',e);
+    // Si falla el normalizador igual tiene que sonar
+    audioConnected=false;
   }
 }
 
-// Activar normalizador al primer play (requiere gesto del usuario)
+function resumeAudioCtx(){
+  if(audioCtx&&audioCtx.state==='suspended'){
+    audioCtx.resume().catch(function(){});
+  }
+}
+
+// Activar al primer play
 audio.addEventListener('play',function(){
-  if(!audioConnected) setupAudioNormalizer();
-  if(audioCtx&&audioCtx.state==='suspended') audioCtx.resume();
+  if(!audioConnected){
+    setupAudioNormalizer();
+  } else {
+    resumeAudioCtx();
+  }
 },true);
 
-// Reanudar contexto si fue suspendido
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'&&audioCtx&&audioCtx.state==='suspended'){
-    audioCtx.resume();
-  }
+  if(document.visibilityState==='visible') resumeAudioCtx();
 });
 var appC={url:'',apk:'',form:''};try{var ac=localStorage.getItem('snt_app');if(ac)appC=JSON.parse(ac);}catch(e){}
 var cfg={quality:'auto',theme:'dark'};try{var uc=localStorage.getItem('snt_cfg');if(uc)cfg=JSON.parse(uc);}catch(e){}
