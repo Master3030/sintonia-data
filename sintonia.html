@@ -409,14 +409,21 @@ var ONLINE_DOC = db.collection('sintonia_online').doc(SESSION_ID);
 
 function trackOpen(){
   var now = new Date();
-  var today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  var today = now.toISOString().split('T')[0];
   var week = getWeekKey(now);
+  // Primero incrementar total
   STATS_DOC.set({
     total: firebase.firestore.FieldValue.increment(1),
-    ['days.'+today]: firebase.firestore.FieldValue.increment(1),
-    ['weeks.'+week]: firebase.firestore.FieldValue.increment(1),
     lastOpen: firebase.firestore.FieldValue.serverTimestamp()
-  },{merge:true}).catch(function(){});
+  },{merge:true}).then(function(){
+    // Luego actualizar día y semana por separado
+    var dayUpdate = {};
+    dayUpdate['days.'+today] = firebase.firestore.FieldValue.increment(1);
+    var weekUpdate = {};
+    weekUpdate['weeks.'+week] = firebase.firestore.FieldValue.increment(1);
+    STATS_DOC.update(dayUpdate).catch(function(){});
+    STATS_DOC.update(weekUpdate).catch(function(){});
+  }).catch(function(){});
 }
 
 function trackOnline(){
@@ -477,17 +484,15 @@ function loadStats(){
     var today=now.toISOString().split('T')[0];
     var week=getWeekKey(now);
 
-    document.getElementById('stat-today').textContent=
-      (data.days&&data.days[today])||0;
-    document.getElementById('stat-week').textContent=
-      (data.weeks&&data.weeks[week])||0;
+    // today/week set below with top stations
     document.getElementById('stat-total').textContent=
       data.total||0;
 
     // Top emisoras
     var stEl=document.getElementById('stat-top-stations');
-    if(data.stations){
-      var arr=Object.entries(data.stations)
+    var stationsData = data.stations || data.Stations || null;
+    if(stationsData && typeof stationsData === 'object'){
+      var arr=Object.entries(stationsData)
         .sort(function(a,b){return b[1]-a[1];})
         .slice(0,5);
       if(arr.length){
@@ -497,9 +502,18 @@ function loadStats(){
             s[1]+' plays</span></div>';
         }).join('');
       } else {
-        stEl.innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px">Sin datos aún</p>';
+        stEl.innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px">Sin datos aún. Reproducí algunas emisoras primero.</p>';
       }
+    } else {
+      stEl.innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px">Sin datos aún. Reproducí algunas emisoras primero.</p>';
     }
+    // Fix today and week display
+    var todayVal = 0;
+    var weekVal = 0;
+    if(data.days && data.days[today]) todayVal = data.days[today];
+    if(data.weeks && data.weeks[week]) weekVal = data.weeks[week];
+    document.getElementById('stat-today').textContent = todayVal;
+    document.getElementById('stat-week').textContent = weekVal;
   }).catch(function(){});
 }
 
