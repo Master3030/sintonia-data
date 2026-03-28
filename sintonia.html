@@ -182,9 +182,21 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 .nl{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:500}
 .gh-status{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#fff;font-size:12px;padding:8px 18px;border-radius:20px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;border:1px solid rgba(255,255,255,.15)}
 .gh-status.show{opacity:1}
+/* ESTADÍSTICAS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--accent);line-height:1}
+.stat-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:6px}
+.stat-card-full{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:10px}
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.stat-row:last-child{border-bottom:none}
+.stat-rname{font-size:13px;font-weight:500}
+.stat-rval{font-size:13px;color:var(--accent);font-weight:600}
+.stat-online{display:inline-block;width:8px;height:8px;background:#00D68F;border-radius:50%;margin-right:6px;animation:blink 1.4s ease-in-out infinite}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 </head>
 <body>
 <div class="glow" id="glow"></div>
@@ -318,6 +330,34 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     <div class="adv"></div>
     <div class="flbl">Emisoras actuales</div>
     <div id="admList"></div>
+
+    <div class="adv"></div>
+    <div class="flbl">📊 Estadísticas en tiempo real <button class="sbn" style="padding:4px 10px;margin-left:8px" onclick="loadStats()">↻ Actualizar</button></div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-today">—</div>
+        <div class="stat-lbl">Aperturas hoy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-week">—</div>
+        <div class="stat-lbl">Esta semana</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">—</div>
+        <div class="stat-lbl">Total histórico</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-online">—</div>
+        <div class="stat-lbl"><span class="stat-online"></span>Ahora online</div>
+      </div>
+    </div>
+
+    <div class="stat-card-full">
+      <div class="cst" style="margin-bottom:10px">Emisoras más escuchadas</div>
+      <div id="stat-top-stations"><p style="color:rgba(255,255,255,.3);font-size:13px">Cargando...</p></div>
+    </div>
+
   </div>
 </div>
 <!-- EDIT MODAL -->
@@ -353,6 +393,119 @@ var firebaseConfig={apiKey:"AIzaSyA0Yk_rFlQoP7VE-b6mrR1EzsljVYoBkTk",authDomain:
 firebase.initializeApp(firebaseConfig);
 var db=firebase.firestore();
 var SINTONIA_DOC=db.collection('sintonia').doc('data');
+// Analytics
+var analytics=firebase.analytics();
+analytics.logEvent('app_open');
+analytics.setUserProperties({
+  platform: window.AndroidBridge ? 'android_app' : 'web_browser'
+});
+
+// ═══════════════════════════════════
+// TRACKING DE ESTADÍSTICAS
+// ═══════════════════════════════════
+var SESSION_ID = Date.now().toString(36) + Math.random().toString(36).substr(2);
+var STATS_DOC = db.collection('sintonia').doc('stats');
+var ONLINE_DOC = db.collection('sintonia_online').doc(SESSION_ID);
+
+function trackOpen(){
+  var now = new Date();
+  var today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  var week = getWeekKey(now);
+  STATS_DOC.set({
+    total: firebase.firestore.FieldValue.increment(1),
+    ['days.'+today]: firebase.firestore.FieldValue.increment(1),
+    ['weeks.'+week]: firebase.firestore.FieldValue.increment(1),
+    lastOpen: firebase.firestore.FieldValue.serverTimestamp()
+  },{merge:true}).catch(function(){});
+}
+
+function trackOnline(){
+  // Registrar usuario online con timestamp
+  ONLINE_DOC.set({
+    ts: firebase.firestore.FieldValue.serverTimestamp(),
+    platform: window.AndroidBridge ? 'app' : 'web'
+  }).catch(function(){});
+  // Actualizar cada 30 segundos para mantener presencia
+  setInterval(function(){
+    ONLINE_DOC.set({
+      ts: firebase.firestore.FieldValue.serverTimestamp(),
+      platform: window.AndroidBridge ? 'app' : 'web'
+    }).catch(function(){});
+  }, 30000);
+  // Eliminar al cerrar
+  window.addEventListener('beforeunload', function(){
+    ONLINE_DOC.delete().catch(function(){});
+  });
+}
+
+function trackStationPlay(stationName){
+  STATS_DOC.set({
+    ['stations.'+stationName.replace(/[^a-zA-Z0-9]/g,'_')]: firebase.firestore.FieldValue.increment(1)
+  },{merge:true}).catch(function(){});
+}
+
+function getWeekKey(date){
+  var d = new Date(date);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay());
+  return d.toISOString().split('T')[0];
+}
+
+// Cargar estadísticas para el panel admin
+function loadStats(){
+  // Usuarios online (activos en últimos 2 minutos)
+  var twoMinAgo = new Date(Date.now() - 2*60*1000);
+  db.collection('sintonia_online')
+    .where('ts','>=',twoMinAgo)
+    .get().then(function(snap){
+      document.getElementById('stat-online').textContent = snap.size;
+    }).catch(function(){
+      document.getElementById('stat-online').textContent = '—';
+    });
+
+  // Stats generales
+  STATS_DOC.get().then(function(doc){
+    if(!doc.exists){
+      document.getElementById('stat-today').textContent='0';
+      document.getElementById('stat-week').textContent='0';
+      document.getElementById('stat-total').textContent='0';
+      document.getElementById('stat-top-stations').innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px">Sin datos aún</p>';
+      return;
+    }
+    var data=doc.data();
+    var now=new Date();
+    var today=now.toISOString().split('T')[0];
+    var week=getWeekKey(now);
+
+    document.getElementById('stat-today').textContent=
+      (data.days&&data.days[today])||0;
+    document.getElementById('stat-week').textContent=
+      (data.weeks&&data.weeks[week])||0;
+    document.getElementById('stat-total').textContent=
+      data.total||0;
+
+    // Top emisoras
+    var stEl=document.getElementById('stat-top-stations');
+    if(data.stations){
+      var arr=Object.entries(data.stations)
+        .sort(function(a,b){return b[1]-a[1];})
+        .slice(0,5);
+      if(arr.length){
+        stEl.innerHTML=arr.map(function(s){
+          return '<div class="stat-row"><span class="stat-rname">'+
+            s[0].replace(/_/g,' ')+'</span><span class="stat-rval">'+
+            s[1]+' plays</span></div>';
+        }).join('');
+      } else {
+        stEl.innerHTML='<p style="color:rgba(255,255,255,.3);font-size:13px">Sin datos aún</p>';
+      }
+    }
+  }).catch(function(){});
+}
+
+// Iniciar tracking
+trackOpen();
+trackOnline();
 var PASS='sintonia2025';
 var DEF=[{name:'Radio Amor',freq:'95.9 FM',logo:'https://images.zeno.fm/9_4zOznEOVrBFTvspmaIFyXUAzdb7hAJOGmMMw-BWDg/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYjExMzA0OTgtYzY0Yi00YjlmLWEwMDItMTg1YjM1YTFlNDhhL2ltYWdlLz91PTE3MzY0OTQ3MTgwMDA.webp',abbr:'AM',color:'#7B1010',stream:'https://rds3.desdeparaguay.net/movamor/movamor.stream/playlist.m3u8',fav:false},{name:'Radio ANR',freq:'89.9 FM',logo:null,abbr:'ANR',color:'#0D3B6E',stream:'https://rds3.desdeparaguay.net/transanr/transanr.stream/playlist.m3u8',fav:false},{name:'Aranduka FM',freq:'87.9 FM',logo:'https://images.zeno.fm/IQFilEDPHAoXe9HvC7R-df2mJ_C-jIvMQolL7sOPzDE/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYWd4emZucGxibTh0YzNSaGRITnlNZ3NTQ2tGMWRHaERiR2xsYm5RWWdJRHdyc1BiamdnTUN4SU9VM1JoZEdsdmJsQnliMlpwYkdVWWdJRHczdnlQNVFzTW9nRUVlbVZ1YncvaW1hZ2UvP3U9MTY1ODY2NzU5NzAwMA.webp',abbr:'ARK',color:'#4A148C',stream:'https://rds3.desdeparaguay.net/movaranduka/movaranduka.stream/playlist.m3u8',fav:false}];
 function ldSt(){try{var s=localStorage.getItem('snt_st');if(s)return JSON.parse(s);}catch(e){}return DEF.map(function(x){return JSON.parse(JSON.stringify(x));});}
@@ -420,7 +573,7 @@ function oPw(){document.getElementById('pwIn').value='';document.getElementById(
 function clsPw(){document.getElementById('pwOv').classList.remove('open');taps=0;}
 function chkPw(){var v=document.getElementById('pwIn').value;if(v===PASS){clsPw();oAdm();}else{var i=document.getElementById('pwIn');i.classList.add('err','shake');setTimeout(function(){i.classList.remove('shake');i.value='';},500);}}
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')chkPw();});
-function oAdm(){document.getElementById('admOv').classList.add('open');document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
+function oAdm(){document.getElementById('admOv').classList.add('open');loadStats();document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
 function clsAdm(){document.getElementById('admOv').classList.remove('open');}
 function admOut(e){if(e.target===document.getElementById('admOv'))clsAdm();}
 function uClr(){var c=document.getElementById('fk').value;document.getElementById('cpv').style.background=c;document.getElementById('chx').textContent=c;}
@@ -476,6 +629,11 @@ function ldStn(idx){
   if(window.AndroidBridge){
     try{AndroidBridge.startRadioService(s.name||'Sintonía',s.freq||'Radio en vivo');}catch(e){}
   }
+  // Registrar reproducción en Analytics y Stats
+  try{
+    analytics.logEvent('station_play',{station_name:s.name,station_freq:s.freq||''});
+    trackStationPlay(s.name);
+  }catch(e){}
   if(stType(stream)==='hls'){
     if(Hls.isSupported()){
       hls=new Hls({enableWorker:false,lowLatencyMode:true,backBufferLength:0,maxBufferLength:8,maxMaxBufferLength:16,manifestLoadingTimeOut:5000,manifestLoadingMaxRetry:2,levelLoadingTimeOut:5000,fragLoadingTimeOut:8000});
