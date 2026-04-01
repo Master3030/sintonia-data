@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -397,6 +396,7 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <script>
+
 // FIREBASE
 var firebaseConfig={apiKey:"AIzaSyA0Yk_rFlQoP7VE-b6mrR1EzsljVYoBkTk",authDomain:"sintonia-app-20271.firebaseapp.com",projectId:"sintonia-app-20271",storageBucket:"sintonia-app-20271.firebasestorage.app",messagingSenderId:"200584866223",appId:"1:200584866223:web:15d29e69c9cef1d08ae75a"};
 firebase.initializeApp(firebaseConfig);
@@ -529,7 +529,17 @@ function loadStats(){
 // Iniciar tracking
 trackOpen();
 trackOnline();
-var PASS='sintonia2025';
+// Contraseña protegida con SHA-256
+// Para cambiarla: generá el hash en https://emn178.github.io/online-tools/sha256.html
+// y reemplazá el valor de PASS_HASH en Firebase desde el panel admin
+var PASS_HASH='87db1fe3e9aa9cc1d8375365619f6150ac93731060386ea3c050d816fc95b2fb';
+
+async function hashPassword(password){
+  const msgBuffer=new TextEncoder().encode(password);
+  const hashBuffer=await crypto.subtle.digest('SHA-256',msgBuffer);
+  const hashArray=Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 var DEF=[{name:'Radio Amor',freq:'95.9 FM',logo:'https://images.zeno.fm/9_4zOznEOVrBFTvspmaIFyXUAzdb7hAJOGmMMw-BWDg/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYjExMzA0OTgtYzY0Yi00YjlmLWEwMDItMTg1YjM1YTFlNDhhL2ltYWdlLz91PTE3MzY0OTQ3MTgwMDA.webp',abbr:'AM',color:'#7B1010',stream:'https://rds3.desdeparaguay.net/movamor/movamor.stream/playlist.m3u8',fav:false},{name:'Radio ANR',freq:'89.9 FM',logo:null,abbr:'ANR',color:'#0D3B6E',stream:'https://rds3.desdeparaguay.net/transanr/transanr.stream/playlist.m3u8',fav:false},{name:'Aranduka FM',freq:'87.9 FM',logo:'https://images.zeno.fm/IQFilEDPHAoXe9HvC7R-df2mJ_C-jIvMQolL7sOPzDE/rs:fill:288:288/g:ce:0:0/aHR0cHM6Ly9wcm94eS56ZW5vLmZtL2NvbnRlbnQvc3RhdGlvbnMvYWd4emZucGxibTh0YzNSaGRITnlNZ3NTQ2tGMWRHaERiR2xsYm5RWWdJRHdyc1BiamdnTUN4SU9VM1JoZEdsdmJsQnliMlpwYkdVWWdJRHczdnlQNVFzTW9nRUVlbVZ1YncvaW1hZ2UvP3U9MTY1ODY2NzU5NzAwMA.webp',abbr:'ARK',color:'#4A148C',stream:'https://rds3.desdeparaguay.net/movaranduka/movaranduka.stream/playlist.m3u8',fav:false}];
 function ldSt(){try{var s=localStorage.getItem('snt_st');if(s)return JSON.parse(s);}catch(e){}return DEF.map(function(x){return JSON.parse(JSON.stringify(x));});}
 function svSt(){
@@ -542,7 +552,7 @@ function loadFromGitHub(){
   SINTONIA_DOC.get().then(function(doc){
     if(doc.exists){
       var data=doc.data();
-      if(data.config){if(data.config.adminPassword)PASS=data.config.adminPassword;if(data.config.appUrl)appC.url=data.config.appUrl;if(data.config.apkUrl)appC.apk=data.config.apkUrl;if(data.config.supportForm)appC.form=data.config.supportForm;try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(e){}aplyApp();}
+      if(data.config){if(data.config.adminPasswordHash)PASS_HASH=data.config.adminPasswordHash;else if(data.config.adminPassword){hashPassword(data.config.adminPassword).then(function(h){PASS_HASH=h;});}if(data.config.appUrl)appC.url=data.config.appUrl;if(data.config.apkUrl)appC.apk=data.config.apkUrl;if(data.config.supportForm)appC.form=data.config.supportForm;try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(e){}aplyApp();}
       if(data.donations){try{localStorage.setItem('snt_don',JSON.stringify(data.donations));}catch(e){}applyDon();}
       if(data.stations&&data.stations.length>0){
         // Cargar favoritos guardados localmente
@@ -561,7 +571,7 @@ function loadFromGitHub(){
 function saveToGitHub(callback){
   var don={btc:'',pp:'',bank:'',tigo:''};
   try{var d=localStorage.getItem('snt_don');if(d)don=JSON.parse(d);}catch(e){}
-  var payload={config:{adminPassword:PASS,appUrl:appC.url||'',apkUrl:appC.apk||'',supportForm:appC.form||''},donations:don,stations:stations.map(function(s){return{name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr,color:s.color,stream:s.stream||''};}),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+  var payload={config:{adminPasswordHash:PASS_HASH,appUrl:appC.url||'',apkUrl:appC.apk||'',supportForm:appC.form||''},donations:don,stations:stations.map(function(s){return{name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr,color:s.color,stream:s.stream||''};}),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
   SINTONIA_DOC.set(payload).then(function(){if(callback)callback(true);}).catch(function(e){console.log('Firebase save error:',e);if(callback)callback(false);});
 }
 var stations=ldSt(),cur=0,playing=false,muted=false,hls=null,slpInt=null,slpLeft=0,recent=[];
@@ -594,7 +604,19 @@ var taps=0,tTmr=null;
 function sTap(){taps++;clearTimeout(tTmr);if(taps>=5){taps=0;oPw();}else{tTmr=setTimeout(function(){taps=0;},3000);}}
 function oPw(){document.getElementById('pwIn').value='';document.getElementById('pwIn').classList.remove('err','shake');document.getElementById('pwOv').classList.add('open');setTimeout(function(){document.getElementById('pwIn').focus();},300);}
 function clsPw(){document.getElementById('pwOv').classList.remove('open');taps=0;}
-function chkPw(){var v=document.getElementById('pwIn').value;if(v===PASS){clsPw();oAdm();}else{var i=document.getElementById('pwIn');i.classList.add('err','shake');setTimeout(function(){i.classList.remove('shake');i.value='';},500);}}
+function chkPw(){
+  var v=document.getElementById('pwIn').value;
+  if(!v) return;
+  hashPassword(v).then(function(hash){
+    if(hash===PASS_HASH){
+      clsPw();oAdm();
+    } else {
+      var i=document.getElementById('pwIn');
+      i.classList.add('err','shake');
+      setTimeout(function(){i.classList.remove('shake');i.value='';},500);
+    }
+  });
+}
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')chkPw();});
 function oAdm(){document.getElementById('admOv').classList.add('open');loadStats();document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
 function clsAdm(){document.getElementById('admOv').classList.remove('open');}
@@ -727,6 +749,7 @@ audio.addEventListener('pause',function(){
 });
 iPlayer();rList();rFavs();applyDon();
 loadFromGitHub();
+
 </script>
 </body>
 </html>
