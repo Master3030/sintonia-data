@@ -182,19 +182,6 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 .nl{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:500}
 .gh-status{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#fff;font-size:12px;padding:8px 18px;border-radius:20px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;border:1px solid rgba(255,255,255,.15)}
 .gh-status.show{opacity:1}
-/* CATEGORÍAS DINÁMICAS */
-.cat-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;gap:0}
-.cat-tab{padding:10px 8px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
-.cat-tab.active{color:var(--text)}
-.cat-tab.t-all.active{border-bottom-color:var(--accent)}
-.cat-tab.t-fm.active{border-bottom-color:#E8003D;color:#E8003D}
-.cat-tab.t-am.active{border-bottom-color:#FFA500;color:#FFA500}
-.cat-tab.t-online.active{border-bottom-color:#00D68F;color:#00D68F}
-.cat-tab.t-rec.active{border-bottom-color:rgba(255,255,255,.5);color:#fff}
-.cat-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.badge-fm{display:inline-block;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 5px;border-radius:4px;font-weight:700;margin-left:5px;vertical-align:middle;background:rgba(232,0,61,.15);color:#E8003D;border:1px solid rgba(232,0,61,.25)}
-.badge-am{display:inline-block;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 5px;border-radius:4px;font-weight:700;margin-left:5px;vertical-align:middle;background:rgba(255,165,0,.15);color:#FFA500;border:1px solid rgba(255,165,0,.25)}
-.badge-online{display:inline-block;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 5px;border-radius:4px;font-weight:700;margin-left:5px;vertical-align:middle;background:rgba(0,214,143,.15);color:#00D68F;border:1px solid rgba(0,214,143,.25)}
 /* ESTADÍSTICAS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;text-align:center}
@@ -230,8 +217,9 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     </div>
     <div class="status-bar" id="statusBar"></div>
   </div>
-  <div class="cat-tabs" id="catTabs"></div>
-  <div id="stList"></div>
+  <div class="tabs"><div class="tab active" onclick="hTab('all',this)">Todas</div><div class="tab" onclick="hTab('rec',this)">Recientes</div></div>
+  <div id="ht-all"><div id="stList"></div></div>
+  <div id="ht-rec" style="display:none"><div id="recList"></div></div>
 </div>
 <div class="page" id="page-search">
   <div class="header"><div class="logo">Sinto<b>nía</b></div><div class="signal"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div></div>
@@ -575,7 +563,7 @@ function loadFromGitHub(){
           return{name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr||s.name.substring(0,3).toUpperCase(),color:s.color||'#333',stream:s.stream||'',fav:savedFavs.indexOf(key)>=0};
         });
         try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
-        cur=0;iPlayer();buildCatTabs();rList();rFavs();rRec();
+        cur=0;iPlayer();rList();rFavs();rRec();
       }
     }
   }).catch(function(e){console.log('Firebase load error:',e);});
@@ -706,7 +694,7 @@ function ldStn(idx){
   }
   rList();rFavs();rRec();
 }
-function iPlayer(){if(!stations.length)return;var s=stations[0];var nl=document.getElementById('npLogo');nl.innerHTML='';nl.appendChild(mkLg(s,'lg'));document.getElementById('npName').textContent=s.name;document.getElementById('npFreq').textContent=s.freq||'';sGlow(s.color);buildCatTabs();}
+function iPlayer(){if(!stations.length)return;var s=stations[0];var nl=document.getElementById('npLogo');nl.innerHTML='';nl.appendChild(mkLg(s,'lg'));document.getElementById('npName').textContent=s.name;document.getElementById('npFreq').textContent=s.freq||'';sGlow(s.color);}
 function tPlay(){
   if(!stations.length)return;
   if(!playing){
@@ -726,70 +714,13 @@ function nSt(){if(stations.length)ldStn((cur+1)%stations.length);}
 function uFavUI(){var el=document.getElementById('npFav');var s=stations[cur];el.textContent=s&&s.fav?'♥':'♡';el.className='fav-btn'+(s&&s.fav?' on':'');}
 function tNF(){if(!stations.length)return;stations[cur].fav=!stations[cur].fav;svSt();uFavUI();rList();rFavs();}
 function tRF(i,el){stations[i].fav=!stations[i].fav;el.textContent=stations[i].fav?'♥':'♡';el.className='rfav'+(stations[i].fav?' on':'');if(i===cur)uFavUI();svSt();rFavs();}
-function mkRow(s,i,act,badge){var row=document.createElement('div');row.className='srow'+(act?' active':'');row.onclick=function(){ldStn(i);};row.appendChild(mkLg(s,'sm'));var inf=document.createElement('div');inf.className='row-info';var nm=document.createElement('div');nm.className='rn';nm.textContent=s.name;if(badge){var bg=document.createElement('span');bg.innerHTML=badge;nm.appendChild(bg);}var sb=document.createElement('div');sb.className='rs';sb.textContent=s.freq||'';inf.appendChild(nm);inf.appendChild(sb);row.appendChild(inf);var rr=document.createElement('div');rr.className='rr';if(act){var mv=document.createElement('div');mv.className='mviz';[['0.2','1','0.5s','0s'],['0.4','0.8','0.7s','0.1s'],['0.1','0.9','0.4s','0.2s']].forEach(function(a){var mb=document.createElement('div');mb.className='mbar';mb.style.setProperty('--lo',a[0]);mb.style.setProperty('--hi',a[1]);mb.style.setProperty('--d',a[2]);mb.style.setProperty('--del',a[3]);mb.style.height='100%';mv.appendChild(mb);});rr.appendChild(mv);}var fv=document.createElement('span');fv.className='rfav'+(s.fav?' on':'');fv.textContent=s.fav?'♥':'♡';fv.onclick=(function(idx,el){return function(e){e.stopPropagation();tRF(idx,el);};})(i,fv);rr.appendChild(fv);row.appendChild(rr);return row;}
-var currentCat='all';
-
-function getBadgeHTML(s){
-  var t=getStationType(s);
-  if(t==='fm') return '<span class="badge-fm">FM</span>';
-  if(t==='am') return '<span class="badge-am">AM</span>';
-  return '<span class="badge-online">WEB</span>';
-}
-
-function rList(){
-  var el=document.getElementById('stList');
-  el.innerHTML='';
-  if(!stations.length){
-    var p=document.createElement('p');p.className='em';
-    p.textContent='Tocá el logo 5 veces para agregar emisoras.';
-    el.appendChild(p);return;
-  }
-  var filtered=stations;
-  if(currentCat==='fm') filtered=stations.filter(function(s){return getStationType(s)==='fm';});
-  else if(currentCat==='am') filtered=stations.filter(function(s){return getStationType(s)==='am';});
-  else if(currentCat==='online') filtered=stations.filter(function(s){return getStationType(s)==='online';});
-  if(!filtered.length){
-    var p2=document.createElement('p');p2.className='em';
-    p2.textContent='No hay emisoras en esta categoría.';
-    el.appendChild(p2);return;
-  }
-  filtered.forEach(function(s){
-    var i=stations.indexOf(s);
-    el.appendChild(mkRow(s,i,i===cur,getBadgeHTML(s)));
-  });
-}
+function mkRow(s,i,act){var row=document.createElement('div');row.className='srow'+(act?' active':'');row.onclick=function(){ldStn(i);};row.appendChild(mkLg(s,'sm'));var inf=document.createElement('div');inf.className='row-info';var nm=document.createElement('div');nm.className='rn';nm.textContent=s.name;var sb=document.createElement('div');sb.className='rs';sb.textContent=s.freq||'';inf.appendChild(nm);inf.appendChild(sb);row.appendChild(inf);var rr=document.createElement('div');rr.className='rr';if(act){var mv=document.createElement('div');mv.className='mviz';[['0.2','1','0.5s','0s'],['0.4','0.8','0.7s','0.1s'],['0.1','0.9','0.4s','0.2s']].forEach(function(a){var mb=document.createElement('div');mb.className='mbar';mb.style.setProperty('--lo',a[0]);mb.style.setProperty('--hi',a[1]);mb.style.setProperty('--d',a[2]);mb.style.setProperty('--del',a[3]);mb.style.height='100%';mv.appendChild(mb);});rr.appendChild(mv);}var fv=document.createElement('span');fv.className='rfav'+(s.fav?' on':'');fv.textContent=s.fav?'♥':'♡';fv.onclick=(function(idx,el){return function(e){e.stopPropagation();tRF(idx,el);};})(i,fv);rr.appendChild(fv);row.appendChild(rr);return row;}
+function rList(){var el=document.getElementById('stList');el.innerHTML='';if(!stations.length){var p=document.createElement('p');p.className='em';p.textContent='Tocá el logo 5 veces para agregar emisoras.';el.appendChild(p);return;}stations.forEach(function(s,i){el.appendChild(mkRow(s,i,i===cur));});}
 function rRec(){var el=document.getElementById('recList');el.innerHTML='';if(!recent.length){var p=document.createElement('p');p.className='em';p.textContent='Todavía no escuchaste ninguna emisora.';el.appendChild(p);return;}recent.forEach(function(i){if(stations[i])el.appendChild(mkRow(stations[i],i,i===cur));});}
 function rFavs(){var grid=document.getElementById('favGrid');grid.innerHTML='';var favs=stations.filter(function(s){return s.fav;});document.getElementById('savSub').textContent=favs.length+' emisora'+(favs.length!==1?'s':'')+' guardada'+(favs.length!==1?'s':'');if(!favs.length){var div=document.createElement('div');div.className='esav';div.innerHTML='<div style="font-size:36px;opacity:.3;margin-bottom:12px">♡</div>Todavía no guardaste ninguna emisora.<br>Tocá ♡ en cualquier emisora.';grid.appendChild(div);return;}favs.forEach(function(s){var idx=stations.indexOf(s);var t=document.createElement('div');t.className='ft';t.onclick=function(){ldStn(idx);gPg('home');};t.appendChild(mkLg(s,'xs'));var n=document.createElement('div');n.className='ftn';n.textContent=s.name;var f=document.createElement('div');f.className='ftf';f.textContent=s.freq||'';t.appendChild(n);t.appendChild(f);grid.appendChild(t);});}
 function dSrch(){var q=document.getElementById('si').value.trim().toLowerCase();document.getElementById('sc').style.display=q?'block':'none';var res=document.getElementById('srchRes');res.innerHTML='';if(!q){var p=document.createElement('p');p.className='em';p.textContent='Escribí para buscar…';res.appendChild(p);return;}var found=stations.filter(function(s){return s.name.toLowerCase().indexOf(q)>=0||(s.freq&&s.freq.toLowerCase().indexOf(q)>=0);});if(!found.length){var p2=document.createElement('p');p2.className='em';p2.textContent='Sin resultados para "'+q+'"';res.appendChild(p2);return;}found.forEach(function(s){var i=stations.indexOf(s);res.appendChild(mkRow(s,i,i===cur));});}
 function cSrch(){document.getElementById('si').value='';dSrch();}
-function getStationType(s){
-  if(s.type) return s.type;
-  var f=(s.freq||'').toUpperCase();
-  if(f.indexOf(' AM')>=0||f==='AM') return 'am';
-  if(f.indexOf(' FM')>=0||f==='FM') return 'fm';
-  return 'online';
-}
-
-function buildCatTabs(){
-  var tabs=document.getElementById('catTabs');
-  if(!tabs||!stations.length) return;
-  var hasFM=stations.some(function(s){return getStationType(s)==='fm';});
-  var hasAM=stations.some(function(s){return getStationType(s)==='am';});
-  var hasOnline=stations.some(function(s){return getStationType(s)==='online';});
-  var html='<div class="cat-tab t-all active" onclick="hTab('all',this)"><span class="cat-dot" style="background:var(--accent)"></span>TODAS</div>';
-  if(hasFM) html+='<div class="cat-tab t-fm" onclick="hTab('fm',this)"><span class="cat-dot" style="background:#E8003D"></span>FM</div>';
-  if(hasAM) html+='<div class="cat-tab t-am" onclick="hTab('am',this)"><span class="cat-dot" style="background:#FFA500"></span>AM</div>';
-  if(hasOnline) html+='<div class="cat-tab t-online" onclick="hTab('online',this)"><span class="cat-dot" style="background:#00D68F"></span>ONLINE</div>';
-  html+='<div class="cat-tab t-rec" onclick="hTab('rec',this)"><span class="cat-dot" style="background:rgba(255,255,255,.3)"></span>RECIENTES</div>';
-  tabs.innerHTML=html;
-}
-
-function hTab(t,el){
-  document.querySelectorAll('.cat-tab').forEach(function(x){x.classList.remove('active');});
-  el.classList.add('active');
-  currentCat=t;
-  if(t==='rec') rRec(); else rList();
-}
+function hTab(t,el){document.querySelectorAll('.tabs .tab').forEach(function(x){x.classList.remove('active');});el.classList.add('active');document.getElementById('ht-all').style.display=t==='all'?'block':'none';document.getElementById('ht-rec').style.display=t==='rec'?'block':'none';if(t==='rec')rRec();}
 function showGHStatus(msg){var el=document.getElementById('ghStatus');el.textContent=msg;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},3000);}
 // Media Session API
 function setupMediaSession(name,freq){
