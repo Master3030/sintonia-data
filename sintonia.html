@@ -473,7 +473,14 @@ function loadFromGitHub(){
         var savedFavs=[];try{var sf=localStorage.getItem('snt_favs');if(sf)savedFavs=JSON.parse(sf);}catch(e){}
         stations=data.stations.map(function(s){var key=s.name+'|'+(s.freq||'');return{name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr||s.name.substring(0,3).toUpperCase(),color:s.color||'#333',stream:s.stream||'',fav:savedFavs.indexOf(key)>=0};});
         try{localStorage.setItem('snt_st',JSON.stringify(stations));}catch(e){}
-        cur=0;iPlayer();buildCatTabs();rList();rFavs();rRec();
+        cur=0;iPlayer();
+// Actualizar tabs y lista solo si no hay interacción del usuario
+buildCatTabs();
+// Solo actualizar si la lista está vacía o si estamos en 'all'
+if(currentCat==='all'||currentCat==='rec'){
+  rList();
+}
+rFavs();
       }
     }
   }).catch(function(e){console.log('Firebase load error:',e);});
@@ -618,6 +625,7 @@ function rList(){
   filtered.forEach(function(s){var i=stations.indexOf(s);el.appendChild(mkRow(s,i,i===cur));});
 }
 function rRec(){
+  if(currentCat!=='rec') return;
   var el=document.getElementById('stList');el.innerHTML='';
   if(!recent.length){var p=document.createElement('p');p.className='em';p.textContent='Todavía no escuchaste ninguna emisora.';el.appendChild(p);return;}
   recent.forEach(function(i){if(stations[i])el.appendChild(mkRow(stations[i],i,i===cur));});
@@ -632,7 +640,10 @@ function startSilentAudio(){try{if(silentCtx)return;silentCtx=new(window.AudioCo
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&silentCtx&&silentCtx.state==='suspended')silentCtx.resume();});
 audio.addEventListener('play',function(){startSilentAudio();var s=stations[cur]||{};setupMediaSession(s.name,s.freq);if(window.AndroidBridge){try{AndroidBridge.startRadioService(s.name||'Sintonía',s.freq||'Radio en vivo');}catch(e){}}});
 audio.addEventListener('pause',function(){if(window.AndroidBridge){try{AndroidBridge.stopRadioService();}catch(e){}}if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused';});
-iPlayer();buildCatTabs();rList();rFavs();applyDon();
+iPlayer();applyDon();
+// Mostrar lista local inmediatamente
+buildCatTabs();rList();rFavs();
+// Cargar desde Firebase (actualiza sin parpadear)
 loadFromGitHub();
 </script>
 </body>
