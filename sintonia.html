@@ -201,10 +201,17 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 .stat-rname{font-size:13px;font-weight:500}
 .stat-rval{font-size:13px;color:var(--accent);font-weight:600}
 .stat-online{display:inline-block;width:8px;height:8px;background:#00D68F;border-radius:50%;margin-right:6px;animation:blink 1.4s ease-in-out infinite}
+/* ANUNCIOS */
+.ad-banner-wrap{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:99;display:none}
+.ad-banner-wrap.show{display:block}
+.ad-interstitial-wrap{position:fixed;inset:0;z-index:998;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85)}
+.ad-interstitial-wrap.show{display:flex}
+.ad-skip-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:Inter,sans-serif}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+<script src="https://cdn.start.io/sdk/web/v1/startapp.js"></script>
 </head>
 <body>
 <div class="glow" id="glow"></div>
@@ -347,6 +354,27 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     <div class="flbl">Emisoras actuales</div>
     <div id="admList"></div>
     <div class="adv"></div>
+    <div class="flbl">💰 Monetización</div>
+    <input class="fi" id="fa-startio" type="text" placeholder="Start.io App ID">
+    <div class="clr" style="margin-bottom:10px;gap:16px">
+      <div style="flex:1">
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:6px">Intersticial cada</div>
+        <select class="fi" id="fa-int-every" style="margin-bottom:0">
+          <option value="2">2 cambios</option>
+          <option value="3" selected>3 cambios</option>
+          <option value="5">5 cambios</option>
+          <option value="8">8 cambios</option>
+          <option value="10">10 cambios</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding-top:20px">
+        <div style="font-size:13px;color:rgba(255,255,255,.5)">Anuncios</div>
+        <div class="tog" id="adsTog" onclick="tAds()"></div>
+      </div>
+    </div>
+    <button class="badd" style="margin-bottom:0" onclick="sAdsCfg(event)">Guardar anuncios</button>
+
+    <div class="adv"></div>
     <div class="flbl">📊 Estadísticas en tiempo real <button class="sbn" style="padding:4px 10px;margin-left:8px" onclick="loadStats()">↻ Actualizar</button></div>
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-num" id="stat-today">—</div><div class="stat-lbl">Aperturas hoy</div></div>
@@ -380,14 +408,105 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     </div>
   </div>
 </div>
+<!-- BANNER START.IO -->
+<div class="ad-banner-wrap" id="adBannerWrap">
+  <div id="startio-banner"></div>
+</div>
 <div class="bnav">
   <div class="nb active" id="nb-home" onclick="gPg('home')"><div class="ni">◎</div><div class="nl">Inicio</div></div>
   <div class="nb" id="nb-search" onclick="gPg('search')"><div class="ni">⌕</div><div class="nl">Buscar</div></div>
   <div class="nb" id="nb-saved" onclick="gPg('saved')"><div class="ni">♥</div><div class="nl">Guardadas</div></div>
   <div class="nb" id="nb-config" onclick="gPg('config')"><div class="ni">◈</div><div class="nl">Config</div></div>
 </div>
+<!-- INTERSTICIAL START.IO -->
+<div class="ad-interstitial-wrap" id="adInterstitial">
+  <button class="ad-skip-btn" id="adSkipBtn" onclick="skipInterstitial()">✕ Cerrar</button>
+  <div id="startio-interstitial"></div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <script>
+// ═══════════════════════════════════
+// ANUNCIOS — START.IO
+// ═══════════════════════════════════
+var ADS_APP_ID = '203947726';
+var adsEnabled = true;
+var interstitialCount = 0;
+var interstitialEvery = 3; // Mostrar intersticial cada 3 cambios de emisora
+var skipTimer = null;
+
+function initAds(){
+  if(!adsEnabled || !ADS_APP_ID) return;
+  try{
+    // Inicializar Start.io SDK
+    startApp.init({appId: ADS_APP_ID});
+    // Banner
+    startApp.showBanner({
+      containerId: 'startio-banner',
+      size: 'BANNER',
+      onLoad: function(){
+        document.getElementById('adBannerWrap').classList.add('show');
+        // Ajustar padding del contenido para el banner
+        document.querySelector('.phone').style.paddingBottom = '170px';
+      },
+      onError: function(e){ console.log('Banner error:', e); }
+    });
+    console.log('Start.io inicializado');
+  }catch(e){ console.log('Ads init error:', e); }
+}
+
+function showInterstitial(){
+  if(!adsEnabled || !ADS_APP_ID) return;
+  interstitialCount++;
+  if(interstitialCount < interstitialEvery) return;
+  interstitialCount = 0;
+  try{
+    startApp.showInterstitial({
+      containerId: 'startio-interstitial',
+      onLoad: function(){
+        var wrap = document.getElementById('adInterstitial');
+        wrap.classList.add('show');
+        // Mostrar botón cerrar después de 5 segundos
+        var skipBtn = document.getElementById('adSkipBtn');
+        skipBtn.style.display = 'none';
+        var secs = 5;
+        skipTimer = setInterval(function(){
+          secs--;
+          if(secs <= 0){
+            clearInterval(skipTimer);
+            skipBtn.style.display = 'block';
+            skipBtn.textContent = '✕ Cerrar';
+          } else {
+            skipBtn.style.display = 'block';
+            skipBtn.textContent = 'Cerrar en ' + secs + 's';
+            skipBtn.style.opacity = '0.5';
+            skipBtn.onclick = null;
+          }
+        }, 1000);
+        setTimeout(function(){
+          skipBtn.style.opacity = '1';
+          skipBtn.onclick = skipInterstitial;
+        }, 5000);
+      },
+      onError: function(e){ console.log('Interstitial error:', e); }
+    });
+  }catch(e){ console.log('Interstitial error:', e); }
+}
+
+function skipInterstitial(){
+  if(skipTimer) clearInterval(skipTimer);
+  document.getElementById('adInterstitial').classList.remove('show');
+  document.getElementById('startio-interstitial').innerHTML = '';
+}
+
+// Cargar config de anuncios desde Firebase
+function loadAdsConfig(data){
+  if(data && data.ads){
+    if(data.ads.startioId) ADS_APP_ID = data.ads.startioId;
+    if(typeof data.ads.enabled !== 'undefined') adsEnabled = data.ads.enabled;
+    if(data.ads.interstitialEvery) interstitialEvery = data.ads.interstitialEvery;
+  }
+}
+
 // FIREBASE
 var firebaseConfig={apiKey:"AIzaSyA0Yk_rFlQoP7VE-b6mrR1EzsljVYoBkTk",authDomain:"sintonia-app-20271.firebaseapp.com",projectId:"sintonia-app-20271",storageBucket:"sintonia-app-20271.firebasestorage.app",messagingSenderId:"200584866223",appId:"1:200584866223:web:15d29e69c9cef1d08ae75a"};
 firebase.initializeApp(firebaseConfig);
@@ -469,6 +588,7 @@ function loadFromGitHub(){
       var data=doc.data();
       if(data.config){if(data.config.adminPasswordHash)PASS_HASH=data.config.adminPasswordHash;else if(data.config.adminPassword){hashPassword(data.config.adminPassword).then(function(h){PASS_HASH=h;});}if(data.config.appUrl)appC.url=data.config.appUrl;if(data.config.apkUrl)appC.apk=data.config.apkUrl;if(data.config.supportForm)appC.form=data.config.supportForm;try{localStorage.setItem('snt_app',JSON.stringify(appC));}catch(e){}aplyApp();}
       if(data.donations){try{localStorage.setItem('snt_don',JSON.stringify(data.donations));}catch(e){}applyDon();}
+      loadAdsConfig(data);
       if(data.stations&&data.stations.length>0){
         var savedFavs=[];try{var sf=localStorage.getItem('snt_favs');if(sf)savedFavs=JSON.parse(sf);}catch(e){}
         stations=data.stations.map(function(s){var key=s.name+'|'+(s.freq||'');return{name:s.name,freq:s.freq||'',logo:s.logo||null,abbr:s.abbr||s.name.substring(0,3).toUpperCase(),color:s.color||'#333',stream:s.stream||'',fav:savedFavs.indexOf(key)>=0};});
@@ -519,7 +639,11 @@ function oPw(){document.getElementById('pwIn').value='';document.getElementById(
 function clsPw(){document.getElementById('pwOv').classList.remove('open');taps=0;}
 function chkPw(){var v=document.getElementById('pwIn').value;if(!v)return;hashPassword(v).then(function(hash){if(hash===PASS_HASH){clsPw();oAdm();}else{var i=document.getElementById('pwIn');i.classList.add('err','shake');setTimeout(function(){i.classList.remove('shake');i.value='';},500);}});}
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')chkPw();});
-function oAdm(){document.getElementById('admOv').classList.add('open');loadStats();document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
+function oAdm(){document.getElementById('admOv').classList.add('open');loadStats();
+  document.getElementById('fa-startio').value=ADS_APP_ID||'';
+  document.getElementById('adsTog').classList.toggle('on',adsEnabled);
+  var sel=document.getElementById('fa-int-every');
+  if(sel) sel.value=String(interstitialEvery);document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
 function clsAdm(){document.getElementById('admOv').classList.remove('open');}
 function admOut(e){if(e.target===document.getElementById('admOv'))clsAdm();}
 function uClr(){var c=document.getElementById('fk').value;document.getElementById('cpv').style.background=c;document.getElementById('chx').textContent=c;}
@@ -572,6 +696,8 @@ function ldStn(idx){
   var stream=s.stream||'';
   if(!stream){sStat('error','Sin URL de stream');return;}
   if(window.AndroidBridge){try{AndroidBridge.startRadioService(s.name||'Sintonía',s.freq||'Radio en vivo');}catch(e){}}
+  // Mostrar intersticial cada X cambios
+  showInterstitial();
   try{analytics.logEvent('station_play',{station_name:s.name,station_freq:s.freq||''});trackStationPlay(s.name);}catch(e){}
   if(stType(stream)==='hls'){
     if(Hls.isSupported()){
@@ -633,6 +759,27 @@ function rRec(){
 function rFavs(){var grid=document.getElementById('favGrid');grid.innerHTML='';var favs=stations.filter(function(s){return s.fav;});document.getElementById('savSub').textContent=favs.length+' emisora'+(favs.length!==1?'s':'')+' guardada'+(favs.length!==1?'s':'');if(!favs.length){var div=document.createElement('div');div.className='esav';div.innerHTML='<div style="font-size:36px;opacity:.3;margin-bottom:12px">♡</div>Todavía no guardaste ninguna emisora.<br>Tocá ♡ en cualquier emisora.';grid.appendChild(div);return;}favs.forEach(function(s){var idx=stations.indexOf(s);var t=document.createElement('div');t.className='ft';t.onclick=function(){ldStn(idx);gPg('home');};t.appendChild(mkLg(s,'xs'));var n=document.createElement('div');n.className='ftn';n.textContent=s.name;var f=document.createElement('div');f.className='ftf';f.textContent=s.freq||'';t.appendChild(n);t.appendChild(f);grid.appendChild(t);});}
 function dSrch(){var q=document.getElementById('si').value.trim().toLowerCase();document.getElementById('sc').style.display=q?'block':'none';var res=document.getElementById('srchRes');res.innerHTML='';if(!q){var p=document.createElement('p');p.className='em';p.textContent='Escribí para buscar…';res.appendChild(p);return;}var found=stations.filter(function(s){return s.name.toLowerCase().indexOf(q)>=0||(s.freq&&s.freq.toLowerCase().indexOf(q)>=0);});if(!found.length){var p2=document.createElement('p');p2.className='em';p2.textContent='Sin resultados para "'+q+'"';res.appendChild(p2);return;}found.forEach(function(s){var i=stations.indexOf(s);res.appendChild(mkRow(s,i,i===cur));});}
 function cSrch(){document.getElementById('si').value='';dSrch();}
+function tAds(){
+  adsEnabled=!adsEnabled;
+  document.getElementById('adsTog').classList.toggle('on',adsEnabled);
+}
+function sAdsCfg(e){
+  var sid=document.getElementById('fa-startio').value.trim();
+  var every=parseInt(document.getElementById('fa-int-every').value);
+  if(sid) ADS_APP_ID=sid;
+  if(every) interstitialEvery=every;
+  var b=e.target;b.textContent='Guardando...';b.style.background='#555';
+  var adsData={startioId:ADS_APP_ID,enabled:adsEnabled,interstitialEvery:interstitialEvery};
+  db.collection('sintonia').doc('data').update({ads:adsData}).then(function(){
+    b.textContent='✓ Guardado';b.style.background='#1B5E20';
+    setTimeout(function(){b.textContent='Guardar anuncios';b.style.background='';},3000);
+    // Reiniciar anuncios con nuevo ID
+    if(sid) initAds();
+  }).catch(function(){
+    b.textContent='⚠ Error';b.style.background='#8B4000';
+    setTimeout(function(){b.textContent='Guardar anuncios';b.style.background='';},3000);
+  });
+}
 function showGHStatus(msg){var el=document.getElementById('ghStatus');el.textContent=msg;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},3000);}
 function setupMediaSession(name,freq){if(!('mediaSession' in navigator))return;navigator.mediaSession.metadata=new MediaMetadata({title:name||'Sintonía',artist:freq||'Radio en vivo',album:'Sintonía — Radio Paraguay'});navigator.mediaSession.setActionHandler('play',function(){if(audio.paused)audio.play();navigator.mediaSession.playbackState='playing';});navigator.mediaSession.setActionHandler('pause',function(){audio.pause();navigator.mediaSession.playbackState='paused';});navigator.mediaSession.setActionHandler('previoustrack',function(){pSt();});navigator.mediaSession.setActionHandler('nexttrack',function(){nSt();});navigator.mediaSession.playbackState='playing';}
 var silentCtx=null,silentNode=null;
@@ -641,6 +788,8 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 audio.addEventListener('play',function(){startSilentAudio();var s=stations[cur]||{};setupMediaSession(s.name,s.freq);if(window.AndroidBridge){try{AndroidBridge.startRadioService(s.name||'Sintonía',s.freq||'Radio en vivo');}catch(e){}}});
 audio.addEventListener('pause',function(){if(window.AndroidBridge){try{AndroidBridge.stopRadioService();}catch(e){}}if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused';});
 iPlayer();applyDon();
+// Iniciar anuncios
+setTimeout(initAds, 2000);
 // Mostrar lista local inmediatamente
 buildCatTabs();rList();rFavs();
 // Cargar desde Firebase (actualiza sin parpadear)
