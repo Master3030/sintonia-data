@@ -407,6 +407,15 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     </div>
   </div>
 </div>
+<!-- BANNER -->
+<div id="adBannerWrap" style="display:none;position:fixed;bottom:56px;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:99;background:#000;text-align:center">
+  <div id="startio-banner"></div>
+</div>
+<!-- INTERSTICIAL -->
+<div id="adInterstitial" style="display:none;position:fixed;inset:0;z-index:1050;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column">
+  <button id="adSkipBtn" onclick="skipInterstitial()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:Inter,sans-serif">Cerrar en 5s</button>
+  <div id="startio-interstitial" style="width:300px;min-height:250px;background:#111;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center"></div>
+</div>
 <div class="bnav">
   <div class="nb active" id="nb-home" onclick="gPg('home')"><div class="ni">◎</div><div class="nl">Inicio</div></div>
   <div class="nb" id="nb-search" onclick="gPg('search')"><div class="ni">⌕</div><div class="nl">Buscar</div></div>
@@ -416,36 +425,75 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <script>
 // ═══════════════════════════════════
-// ANUNCIOS — Start.io (SDK nativo Android)
-// El banner y el intersticial los maneja
-// el código Kotlin vía AndroidBridge
+// ANUNCIOS — Start.io
 // ═══════════════════════════════════
+var ADS_APP_ID = '203947726';
 var adsEnabled = true;
 var interstitialCount = 0;
 var interstitialEvery = 3;
+var interstitialShowing = false;
 
 function initAds(){
-  // Notificar al SDK nativo que inicialice el banner
-  if(window.AndroidBridge){
-    try{ AndroidBridge.initAds(adsEnabled); }catch(e){}
-  }
+  if(!adsEnabled) return;
+  // Cargar banner de Start.io via script tag
+  try{
+    if(document.getElementById('startio-banner-script')) return;
+    var s = document.createElement('script');
+    s.id = 'startio-banner-script';
+    s.src = 'https://d3d9bx52y6tmdg.cloudfront.net/ads.min.js';
+    s.setAttribute('data-app-id', ADS_APP_ID);
+    s.setAttribute('data-ad-type', 'banner');
+    s.setAttribute('data-container', 'startio-banner');
+    document.body.appendChild(s);
+    document.getElementById('adBannerWrap').style.display = 'block';
+  }catch(e){}
 }
 
 function showInterstitial(){
-  if(!adsEnabled) return;
+  if(!adsEnabled || interstitialShowing) return;
   interstitialCount++;
   if(interstitialCount < interstitialEvery) return;
   interstitialCount = 0;
-  // Llamar al SDK nativo para mostrar intersticial
-  if(window.AndroidBridge){
-    try{ AndroidBridge.showInterstitial(); }catch(e){}
-  }
+  interstitialShowing = true;
+  var wrap = document.getElementById('adInterstitial');
+  wrap.style.display = 'flex';
+  // Cargar anuncio intersticial
+  try{
+    var container = document.getElementById('startio-interstitial');
+    container.innerHTML = '';
+    var s = document.createElement('script');
+    s.src = 'https://d3d9bx52y6tmdg.cloudfront.net/ads.min.js';
+    s.setAttribute('data-app-id', ADS_APP_ID);
+    s.setAttribute('data-ad-type', 'interstitial');
+    s.setAttribute('data-container', 'startio-interstitial');
+    container.appendChild(s);
+  }catch(e){}
+  // Mostrar botón cerrar después de 5 segundos
+  var skipBtn = document.getElementById('adSkipBtn');
+  skipBtn.style.opacity = '0.4';
+  skipBtn.textContent = 'Cerrar en 5s';
+  var secs = 5;
+  var t = setInterval(function(){
+    secs--;
+    if(secs <= 0){
+      clearInterval(t);
+      skipBtn.style.opacity = '1';
+      skipBtn.textContent = '✕ Cerrar';
+    } else {
+      skipBtn.textContent = 'Cerrar en '+secs+'s';
+    }
+  }, 1000);
 }
 
-function skipInterstitial(){ }
+function skipInterstitial(){
+  document.getElementById('adInterstitial').style.display = 'none';
+  document.getElementById('startio-interstitial').innerHTML = '';
+  interstitialShowing = false;
+}
 
 function loadAdsConfig(data){
   if(data && data.ads){
+    if(data.ads.startioId) ADS_APP_ID = data.ads.startioId;
     if(typeof data.ads.enabled !== 'undefined') adsEnabled = data.ads.enabled;
     if(data.ads.interstitialEvery) interstitialEvery = parseInt(data.ads.interstitialEvery);
   }
@@ -732,8 +780,8 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 audio.addEventListener('play',function(){startSilentAudio();var s=stations[cur]||{};setupMediaSession(s.name,s.freq);if(window.AndroidBridge){try{AndroidBridge.startRadioService(s.name||'Sintonía',s.freq||'Radio en vivo');}catch(e){}}});
 audio.addEventListener('pause',function(){if(window.AndroidBridge){try{AndroidBridge.stopRadioService();}catch(e){}}if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused';});
 iPlayer();applyDon();
-// Iniciar anuncios via SDK nativo
-setTimeout(initAds, 1500);
+// Iniciar anuncios
+setTimeout(initAds, 2000);
 // Mostrar lista local inmediatamente
 buildCatTabs();rList();rFavs();
 // Cargar desde Firebase (actualiza sin parpadear)
