@@ -566,18 +566,35 @@ var adData = {
 
 function initAds(){
   if(!adsEnabled) return;
-  // Mostrar banner con datos
-  var b = document.getElementById('adBanner');
+  if(ADS_APP_ID) initStartio();
+  else if(ADS_WORTISE_ID) initWortise();
+}
+
+function initStartio(){
+  // Start.io banner real via iframe
+  var b=document.getElementById('adBanner');
   if(!b) return;
-  document.getElementById('adBannerIcon').style.background = adData.banner.imgBg || adData.banner.iconBg;
-  document.getElementById('adBannerIcon').textContent = adData.banner.icon;
-  document.getElementById('adBannerTitle').textContent = adData.banner.title;
-  document.getElementById('adBannerDesc').textContent = adData.banner.desc;
-  document.getElementById('adBannerCta').textContent = adData.banner.cta;
-  adBannerUrl = adData.banner.url;
+  // Ocultar contenido de demo, mostrar iframe de Start.io
+  b.innerHTML =
+    '<div style="position:absolute;top:3px;right:14px;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase">Publicidad</div>'+
+    '<iframe src="https://www.startappservice.com/serve?appId='+ADS_APP_ID+'&adType=banner&size=320x50" '+
+    'width="320" height="50" frameborder="0" scrolling="no" style="display:block;margin:0 auto;border:none" '+
+    'allow="autoplay" sandbox="allow-scripts allow-popups allow-same-origin allow-top-navigation"></iframe>';
   b.classList.add('show');
-  // Ajustar padding para el banner
-  document.querySelector('.phone').style.paddingBottom = '170px';
+  document.querySelector('.phone').style.paddingBottom='170px';
+}
+
+function initWortise(){
+  // Wortise banner
+  var b=document.getElementById('adBanner');
+  if(!b||!ADS_WORTISE_ID) return;
+  b.innerHTML=
+    '<div style="position:absolute;top:3px;right:14px;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase">Publicidad</div>'+
+    '<iframe src="https://ads.wortise.com/banner?id='+ADS_WORTISE_ID+'" '+
+    'width="320" height="50" frameborder="0" scrolling="no" style="display:block;margin:0 auto;border:none" '+
+    'sandbox="allow-scripts allow-popups allow-same-origin allow-top-navigation"></iframe>';
+  b.classList.add('show');
+  document.querySelector('.phone').style.paddingBottom='170px';
 }
 
 function adBannerClick(){
@@ -600,6 +617,16 @@ function showInterstitial(){
   document.getElementById('adIntDesc').textContent = d.desc;
   document.getElementById('adIntCta').textContent = d.cta;
   adIntUrl = d.url;
+  // Cargar intersticial real de Start.io
+  var intContainer = document.getElementById('adIntImg');
+  if(ADS_APP_ID){
+    intContainer.innerHTML =
+      '<iframe src="https://www.startappservice.com/serve?appId='+ADS_APP_ID+'&adType=interstitial&size=300x250" '+
+      'width="300" height="250" frameborder="0" scrolling="no" style="border:none" '+
+      'allow="autoplay" sandbox="allow-scripts allow-popups allow-same-origin allow-top-navigation"></iframe>';
+    intContainer.style.height='250px';
+    intContainer.style.background='#111';
+  }
   document.getElementById('adInterstitial').classList.add('show');
   // Countdown 5 segundos
   var secs = 5;
@@ -634,18 +661,27 @@ function skipInterstitial(){
 
 // Anuncio nativo en la lista (se inserta cada N emisoras)
 function mkNativeAd(){
-  var d = adData.banner;
-  var row = document.createElement('div');
-  row.className = 'native-list-ad';
-  row.onclick = function(){ if(adBannerUrl && adBannerUrl !== '#') window.open(adBannerUrl,'_blank'); };
-  row.innerHTML =
-    '<span class="native-list-badge">Publicidad</span>'+
-    '<div class="native-list-icon" style="background:'+d.iconBg+'">'+d.icon+'</div>'+
-    '<div class="native-list-info">'+
-      '<div class="native-list-title">'+d.title+'</div>'+
-      '<div class="native-list-desc">'+d.desc+'</div>'+
-    '</div>'+
-    '<span class="native-list-cta">'+d.cta+'</span>';
+  var row=document.createElement('div');
+  row.className='native-list-ad';
+  row.style.padding='8px 0';
+  if(ADS_APP_ID){
+    row.innerHTML=
+      '<span class="native-list-badge">Publicidad</span>'+
+      '<iframe src="https://www.startappservice.com/serve?appId='+ADS_APP_ID+'&adType=native&size=300x50" '+
+      'width="100%" height="60" frameborder="0" scrolling="no" style="border:none;display:block" '+
+      'allow="autoplay" sandbox="allow-scripts allow-popups allow-same-origin allow-top-navigation"></iframe>';
+  } else {
+    // Fallback demo si no hay ID
+    var d=adData.banner;
+    row.innerHTML=
+      '<span class="native-list-badge">Publicidad</span>'+
+      '<div class="native-list-icon" style="background:'+d.iconBg+'">'+d.icon+'</div>'+
+      '<div class="native-list-info">'+
+        '<div class="native-list-title">'+d.title+'</div>'+
+        '<div class="native-list-desc">'+d.desc+'</div>'+
+      '</div>'+
+      '<span class="native-list-cta">'+d.cta+'</span>';
+  }
   return row;
 }
 
