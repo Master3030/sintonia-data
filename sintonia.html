@@ -201,6 +201,46 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 .stat-rname{font-size:13px;font-weight:500}
 .stat-rval{font-size:13px;color:var(--accent);font-weight:600}
 .stat-online{display:inline-block;width:8px;height:8px;background:#00D68F;border-radius:50%;margin-right:6px;animation:blink 1.4s ease-in-out infinite}
+/* ═══ ANUNCIOS ═══ */
+/* Banner fijo abajo */
+.ad-banner{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);width:100%;max-width:390px;height:60px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-top:1px solid rgba(255,255,255,.08);display:none;align-items:center;justify-content:space-between;padding:0 16px;z-index:200}
+.ad-banner.show{display:flex}
+.ad-banner-content{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.ad-banner-icon{width:36px;height:36px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.ad-banner-text{flex:1;min-width:0}
+.ad-banner-title{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.ad-banner-desc{font-size:10px;color:rgba(255,255,255,.4)}
+.ad-banner-cta{background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:8px 14px;border-radius:8px;flex-shrink:0;border:none;cursor:pointer;font-family:Inter,sans-serif}
+.ad-banner-badge{position:absolute;top:3px;right:14px;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase}
+/* Nativo en lista */
+.native-list-ad{display:flex;align-items:center;padding:13px 0;gap:14px;border-bottom:1px solid var(--border);position:relative;cursor:pointer}
+.native-list-badge{font-size:8px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;right:0}
+.native-list-icon{width:48px;height:48px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.native-list-info{flex:1;min-width:0}
+.native-list-title{font-size:14px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.native-list-desc{font-size:11px;color:var(--muted)}
+.native-list-cta{font-size:11px;color:var(--accent);border:1px solid rgba(232,0,61,.3);padding:5px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0}
+/* Intersticial */
+.ad-interstitial{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1050;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.ad-interstitial.show{display:flex}
+.ad-int-badge{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.ad-int-card{background:#111;border:1px solid rgba(255,255,255,.08);border-radius:24px;width:100%;max-width:340px;overflow:hidden}
+.ad-int-img{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:64px}
+.ad-int-body{padding:20px}
+.ad-int-title{font-size:20px;font-weight:700;margin-bottom:6px;color:#fff}
+.ad-int-desc{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:20px;line-height:1.5}
+.ad-int-cta{width:100%;padding:14px;background:var(--accent);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;font-family:Inter,sans-serif;box-shadow:0 4px 20px rgba(232,0,61,.35)}
+.ad-int-skip{width:100%;padding:10px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif}
+.ad-int-countdown{font-size:11px;color:rgba(255,255,255,.25);text-align:center;margin-top:4px}
+/* Admin redes */
+.ad-network-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.ad-network-row:last-child{border-bottom:none}
+.ad-net-logo{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ad-net-info{flex:1}
+.ad-net-name{font-size:13px;font-weight:600;color:#fff}
+.ad-net-types{font-size:11px;color:rgba(255,255,255,.3)}
+.ad-status-on{font-size:11px;color:#00D68F;background:rgba(0,214,143,.1);border:1px solid rgba(0,214,143,.2);padding:4px 10px;border-radius:6px}
+.ad-status-off{font-size:11px;color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:4px 10px;border-radius:6px}
 /* ANUNCIOS */
 .ad-banner-wrap{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:99;display:none}
 .ad-banner-wrap.show{display:block}
@@ -354,7 +394,56 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     <div id="admList"></div>
     <div class="adv"></div>
     <div class="flbl">💰 Monetización</div>
+
+    <!-- Redes publicitarias -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px">
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(0,150,255,.15)">🚀</div>
+        <div class="ad-net-info"><div class="ad-net-name">Start.io</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
+        <div id="startio-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(255,100,0,.15)">⚡</div>
+        <div class="ad-net-info"><div class="ad-net-name">Wortise</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
+        <div id="wortise-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(66,133,244,.15)">🅰</div>
+        <div class="ad-net-info"><div class="ad-net-name">Google AdMob</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
+        <div id="admob-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(24,119,242,.15)">📘</div>
+        <div class="ad-net-info"><div class="ad-net-name">Facebook Ads</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
+        <div id="facebook-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(255,255,255,.08)">🎮</div>
+        <div class="ad-net-info"><div class="ad-net-name">Unity Ads</div><div class="ad-net-types">Banner · Intersticial · Video</div></div>
+        <div id="unity-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(0,200,150,.15)">💎</div>
+        <div class="ad-net-info"><div class="ad-net-name">IronSource</div><div class="ad-net-types">Banner · Intersticial · Video</div></div>
+        <div id="ironsource-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(255,50,100,.15)">📲</div>
+        <div class="ad-net-info"><div class="ad-net-name">Appnext</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
+        <div id="appnext-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <div class="ad-network-row">
+        <div class="ad-net-logo" style="background:rgba(150,0,255,.15)">💰</div>
+        <div class="ad-net-info"><div class="ad-net-name">Monetag</div><div class="ad-net-types">Banner · Intersticial</div></div>
+        <div id="monetag-status" class="ad-status-off">Sin ID</div>
+      </div>
+    </div>
+
+    <!-- Configuración -->
     <input class="fi" id="fa-startio" type="text" placeholder="Start.io App ID">
+    <input class="fi" id="fa-wortise" type="text" placeholder="Wortise App ID (opcional)">
+    <input class="fi" id="fa-admob-banner" type="text" placeholder="AdMob Banner ID (opcional)">
+    <input class="fi" id="fa-admob-int" type="text" placeholder="AdMob Intersticial ID (opcional)">
     <div class="clr" style="margin-bottom:10px;gap:16px">
       <div style="flex:1">
         <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:6px">Intersticial cada</div>
@@ -407,15 +496,35 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     </div>
   </div>
 </div>
-<!-- BANNER -->
-<div id="adBannerWrap" style="display:none;position:fixed;bottom:56px;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:99;background:#000;text-align:center">
-  <div id="startio-banner"></div>
 </div>
+<!-- BANNER ANUNCIO -->
+<div class="ad-banner" id="adBanner">
+  <div class="ad-banner-badge">Publicidad</div>
+  <div class="ad-banner-content">
+    <div class="ad-banner-icon" id="adBannerIcon" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🎮</div>
+    <div class="ad-banner-text">
+      <div class="ad-banner-title" id="adBannerTitle">Cargando anuncio…</div>
+      <div class="ad-banner-desc" id="adBannerDesc">Publicidad</div>
+    </div>
+  </div>
+  <button class="ad-banner-cta" id="adBannerCta" onclick="adBannerClick()">Ver</button>
+</div>
+
 <!-- INTERSTICIAL -->
-<div id="adInterstitial" style="display:none;position:fixed;inset:0;z-index:1050;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column">
-  <button id="adSkipBtn" onclick="skipInterstitial()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:Inter,sans-serif">Cerrar en 5s</button>
-  <div id="startio-interstitial" style="width:300px;min-height:250px;background:#111;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center"></div>
+<div class="ad-interstitial" id="adInterstitial">
+  <div class="ad-int-badge">Publicidad</div>
+  <div class="ad-int-card">
+    <div class="ad-int-img" id="adIntImg" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#E8003D 100%)">🏆</div>
+    <div class="ad-int-body">
+      <div class="ad-int-title" id="adIntTitle">Anuncio</div>
+      <div class="ad-int-desc" id="adIntDesc">Tocá para ver más información sobre este anuncio.</div>
+      <button class="ad-int-cta" id="adIntCta" onclick="adIntClick()">Ver más</button>
+      <button class="ad-int-skip" onclick="skipInterstitial()">Omitir anuncio</button>
+      <div class="ad-int-countdown" id="adIntCountdown">Podés omitir en 5 segundos</div>
+    </div>
+  </div>
 </div>
+
 <div class="bnav">
   <div class="nb active" id="nb-home" onclick="gPg('home')"><div class="ni">◎</div><div class="nl">Inicio</div></div>
   <div class="nb" id="nb-search" onclick="gPg('search')"><div class="ni">⌕</div><div class="nl">Buscar</div></div>
@@ -425,28 +534,56 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <script>
 // ═══════════════════════════════════
-// ANUNCIOS — Start.io
+// ANUNCIOS — Multi-red
+// Banner + Intersticial + Nativo
 // ═══════════════════════════════════
-var ADS_APP_ID = '203947726';
+var ADS_APP_ID = '203947726'; // Start.io
+var ADS_WORTISE_ID = '';
+var ADS_ADMOB_BANNER = '';
+var ADS_ADMOB_INT = '';
 var adsEnabled = true;
 var interstitialCount = 0;
 var interstitialEvery = 3;
 var interstitialShowing = false;
+var adIntCountdownTimer = null;
+var adIntUrl = '';
+var adBannerUrl = '';
+
+// Datos de anuncios de ejemplo (se reemplazan con los de la red real)
+var adData = {
+  banner: {
+    icon: '🎮', iconBg: 'linear-gradient(135deg,#f093fb,#f5576c)',
+    title: 'Jugá gratis ahora', desc: 'El juego más popular del momento',
+    cta: 'Instalar', url: '#'
+  },
+  interstitial: {
+    img: '🏆', imgBg: 'linear-gradient(135deg,#667eea 0%,#764ba2 50%,#E8003D 100%)',
+    title: '¡Ganá premios increíbles!',
+    desc: 'Descargá la app y participá en sorteos diarios. Más de 500 ganadores cada semana.',
+    cta: 'Descargar gratis', url: '#'
+  }
+};
 
 function initAds(){
   if(!adsEnabled) return;
-  // Cargar banner de Start.io via script tag
-  try{
-    if(document.getElementById('startio-banner-script')) return;
-    var s = document.createElement('script');
-    s.id = 'startio-banner-script';
-    s.src = 'https://d3d9bx52y6tmdg.cloudfront.net/ads.min.js';
-    s.setAttribute('data-app-id', ADS_APP_ID);
-    s.setAttribute('data-ad-type', 'banner');
-    s.setAttribute('data-container', 'startio-banner');
-    document.body.appendChild(s);
-    document.getElementById('adBannerWrap').style.display = 'block';
-  }catch(e){}
+  // Mostrar banner con datos
+  var b = document.getElementById('adBanner');
+  if(!b) return;
+  document.getElementById('adBannerIcon').style.background = adData.banner.imgBg || adData.banner.iconBg;
+  document.getElementById('adBannerIcon').textContent = adData.banner.icon;
+  document.getElementById('adBannerTitle').textContent = adData.banner.title;
+  document.getElementById('adBannerDesc').textContent = adData.banner.desc;
+  document.getElementById('adBannerCta').textContent = adData.banner.cta;
+  adBannerUrl = adData.banner.url;
+  b.classList.add('show');
+  // Ajustar padding para el banner
+  document.querySelector('.phone').style.paddingBottom = '170px';
+}
+
+function adBannerClick(){
+  if(adBannerUrl && adBannerUrl !== '#'){
+    window.open(adBannerUrl,'_blank');
+  }
 }
 
 function showInterstitial(){
@@ -455,47 +592,73 @@ function showInterstitial(){
   if(interstitialCount < interstitialEvery) return;
   interstitialCount = 0;
   interstitialShowing = true;
-  var wrap = document.getElementById('adInterstitial');
-  wrap.style.display = 'flex';
-  // Cargar anuncio intersticial
-  try{
-    var container = document.getElementById('startio-interstitial');
-    container.innerHTML = '';
-    var s = document.createElement('script');
-    s.src = 'https://d3d9bx52y6tmdg.cloudfront.net/ads.min.js';
-    s.setAttribute('data-app-id', ADS_APP_ID);
-    s.setAttribute('data-ad-type', 'interstitial');
-    s.setAttribute('data-container', 'startio-interstitial');
-    container.appendChild(s);
-  }catch(e){}
-  // Mostrar botón cerrar después de 5 segundos
-  var skipBtn = document.getElementById('adSkipBtn');
-  skipBtn.style.opacity = '0.4';
-  skipBtn.textContent = 'Cerrar en 5s';
+  // Cargar datos del intersticial
+  var d = adData.interstitial;
+  document.getElementById('adIntImg').style.background = d.imgBg;
+  document.getElementById('adIntImg').textContent = d.img;
+  document.getElementById('adIntTitle').textContent = d.title;
+  document.getElementById('adIntDesc').textContent = d.desc;
+  document.getElementById('adIntCta').textContent = d.cta;
+  adIntUrl = d.url;
+  document.getElementById('adInterstitial').classList.add('show');
+  // Countdown 5 segundos
   var secs = 5;
-  var t = setInterval(function(){
+  var skipBtn = document.querySelector('.ad-int-skip');
+  var countdown = document.getElementById('adIntCountdown');
+  skipBtn.style.opacity = '0';
+  skipBtn.style.pointerEvents = 'none';
+  countdown.textContent = 'Podés omitir en ' + secs + ' segundos';
+  if(adIntCountdownTimer) clearInterval(adIntCountdownTimer);
+  adIntCountdownTimer = setInterval(function(){
     secs--;
     if(secs <= 0){
-      clearInterval(t);
+      clearInterval(adIntCountdownTimer);
       skipBtn.style.opacity = '1';
-      skipBtn.textContent = '✕ Cerrar';
+      skipBtn.style.pointerEvents = 'all';
+      countdown.textContent = 'Tocá "Omitir" para continuar';
     } else {
-      skipBtn.textContent = 'Cerrar en '+secs+'s';
+      countdown.textContent = 'Podés omitir en ' + secs + ' segundo' + (secs !== 1 ? 's' : '');
     }
   }, 1000);
 }
 
+function adIntClick(){
+  if(adIntUrl && adIntUrl !== '#') window.open(adIntUrl,'_blank');
+}
+
 function skipInterstitial(){
-  document.getElementById('adInterstitial').style.display = 'none';
-  document.getElementById('startio-interstitial').innerHTML = '';
+  if(adIntCountdownTimer) clearInterval(adIntCountdownTimer);
+  document.getElementById('adInterstitial').classList.remove('show');
   interstitialShowing = false;
+}
+
+// Anuncio nativo en la lista (se inserta cada N emisoras)
+function mkNativeAd(){
+  var d = adData.banner;
+  var row = document.createElement('div');
+  row.className = 'native-list-ad';
+  row.onclick = function(){ if(adBannerUrl && adBannerUrl !== '#') window.open(adBannerUrl,'_blank'); };
+  row.innerHTML =
+    '<span class="native-list-badge">Publicidad</span>'+
+    '<div class="native-list-icon" style="background:'+d.iconBg+'">'+d.icon+'</div>'+
+    '<div class="native-list-info">'+
+      '<div class="native-list-title">'+d.title+'</div>'+
+      '<div class="native-list-desc">'+d.desc+'</div>'+
+    '</div>'+
+    '<span class="native-list-cta">'+d.cta+'</span>';
+  return row;
 }
 
 function loadAdsConfig(data){
   if(data && data.ads){
-    if(data.ads.startioId) ADS_APP_ID = data.ads.startioId;
-    if(typeof data.ads.enabled !== 'undefined') adsEnabled = data.ads.enabled;
-    if(data.ads.interstitialEvery) interstitialEvery = parseInt(data.ads.interstitialEvery);
+    if(data.ads.startioId) ADS_APP_ID=data.ads.startioId;
+    if(data.ads.wortiseId) ADS_WORTISE_ID=data.ads.wortiseId;
+    if(data.ads.admobBanner) ADS_ADMOB_BANNER=data.ads.admobBanner;
+    if(data.ads.admobInt) ADS_ADMOB_INT=data.ads.admobInt;
+    if(typeof data.ads.enabled!=='undefined') adsEnabled=data.ads.enabled;
+    if(data.ads.interstitialEvery) interstitialEvery=parseInt(data.ads.interstitialEvery);
+    if(data.ads.bannerData) adData.banner=data.ads.bannerData;
+    if(data.ads.interstitialData) adData.interstitial=data.ads.interstitialData;
   }
 }
 
@@ -633,9 +796,15 @@ function chkPw(){var v=document.getElementById('pwIn').value;if(!v)return;hashPa
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')chkPw();});
 function oAdm(){document.getElementById('admOv').classList.add('open');loadStats();
   document.getElementById('fa-startio').value=ADS_APP_ID||'';
+  var fw=document.getElementById('fa-wortise');if(fw)fw.value=ADS_WORTISE_ID||'';
+  var fab=document.getElementById('fa-admob-banner');if(fab)fab.value=ADS_ADMOB_BANNER||'';
+  var fai=document.getElementById('fa-admob-int');if(fai)fai.value=ADS_ADMOB_INT||'';
   document.getElementById('adsTog').classList.toggle('on',adsEnabled);
-  var sel=document.getElementById('fa-int-every');
-  if(sel) sel.value=String(interstitialEvery);document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
+  var sel=document.getElementById('fa-int-every');if(sel)sel.value=String(interstitialEvery);
+  // Actualizar estado de redes
+  var ss=document.getElementById('startio-status');if(ss){ss.className=ADS_APP_ID?'ad-status-on':'ad-status-off';ss.textContent=ADS_APP_ID?'✓ Activo':'Sin ID';}
+  var ws=document.getElementById('wortise-status');if(ws){ws.className=ADS_WORTISE_ID?'ad-status-on':'ad-status-off';ws.textContent=ADS_WORTISE_ID?'✓ Activo':'Sin ID';}
+  var as=document.getElementById('admob-status');if(as){as.className=ADS_ADMOB_BANNER?'ad-status-on':'ad-status-off';as.textContent=ADS_ADMOB_BANNER?'✓ Activo':'Sin ID';}document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
 function clsAdm(){document.getElementById('admOv').classList.remove('open');}
 function admOut(e){if(e.target===document.getElementById('admOv'))clsAdm();}
 function uClr(){var c=document.getElementById('fk').value;document.getElementById('cpv').style.background=c;document.getElementById('chx').textContent=c;}
@@ -740,7 +909,12 @@ function rList(){
   else if(currentCat==='am') filtered=stations.filter(function(s){return getStationType(s)==='am';});
   else if(currentCat==='online') filtered=stations.filter(function(s){return getStationType(s)==='online';});
   if(!filtered.length){var p2=document.createElement('p');p2.className='em';p2.textContent='No hay emisoras en esta categoría.';el.appendChild(p2);return;}
-  filtered.forEach(function(s){var i=stations.indexOf(s);el.appendChild(mkRow(s,i,i===cur));});
+  filtered.forEach(function(s,pos){
+    var i=stations.indexOf(s);
+    el.appendChild(mkRow(s,i,i===cur));
+    // Insertar anuncio nativo después de cada 4 emisoras
+    if(adsEnabled && pos===3) el.appendChild(mkNativeAd());
+  });
 }
 function rRec(){
   if(currentCat!=='rec') return;
@@ -757,16 +931,21 @@ function tAds(){
 }
 function sAdsCfg(e){
   var sid=document.getElementById('fa-startio').value.trim();
-  var every=parseInt(document.getElementById('fa-int-every').value);
-  if(sid) ADS_APP_ID=sid;
-  if(every) interstitialEvery=every;
+  var wid=(document.getElementById('fa-wortise')||{}).value||'';
+  var abid=(document.getElementById('fa-admob-banner')||{}).value||'';
+  var aiid=(document.getElementById('fa-admob-int')||{}).value||'';
+  var every=parseInt(document.getElementById('fa-int-every').value)||3;
+  if(sid) ADS_APP_ID=sid.trim();
+  if(wid) ADS_WORTISE_ID=wid.trim();
+  if(abid) ADS_ADMOB_BANNER=abid.trim();
+  if(aiid) ADS_ADMOB_INT=aiid.trim();
+  interstitialEvery=every;
   var b=e.target;b.textContent='Guardando...';b.style.background='#555';
-  var adsData={startioId:ADS_APP_ID,enabled:adsEnabled,interstitialEvery:interstitialEvery};
+  var adsData={startioId:ADS_APP_ID,wortiseId:ADS_WORTISE_ID,admobBanner:ADS_ADMOB_BANNER,admobInt:ADS_ADMOB_INT,enabled:adsEnabled,interstitialEvery:interstitialEvery};
   db.collection('sintonia').doc('data').update({ads:adsData}).then(function(){
     b.textContent='✓ Guardado';b.style.background='#1B5E20';
     setTimeout(function(){b.textContent='Guardar anuncios';b.style.background='';},3000);
-    // Reiniciar anuncios con nuevo ID
-    if(sid) initAds();
+    initAds();
   }).catch(function(){
     b.textContent='⚠ Error';b.style.background='#8B4000';
     setTimeout(function(){b.textContent='Guardar anuncios';b.style.background='';},3000);
