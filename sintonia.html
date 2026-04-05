@@ -211,7 +211,6 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
-<script src="https://cdn.start.io/sdk/web/v1/startapp.js"></script>
 </head>
 <body>
 <div class="glow" id="glow"></div>
@@ -408,102 +407,47 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     </div>
   </div>
 </div>
-<!-- BANNER START.IO -->
-<div class="ad-banner-wrap" id="adBannerWrap">
-  <div id="startio-banner"></div>
-</div>
 <div class="bnav">
   <div class="nb active" id="nb-home" onclick="gPg('home')"><div class="ni">◎</div><div class="nl">Inicio</div></div>
   <div class="nb" id="nb-search" onclick="gPg('search')"><div class="ni">⌕</div><div class="nl">Buscar</div></div>
   <div class="nb" id="nb-saved" onclick="gPg('saved')"><div class="ni">♥</div><div class="nl">Guardadas</div></div>
   <div class="nb" id="nb-config" onclick="gPg('config')"><div class="ni">◈</div><div class="nl">Config</div></div>
 </div>
-<!-- INTERSTICIAL START.IO -->
-<div class="ad-interstitial-wrap" id="adInterstitial">
-  <button class="ad-skip-btn" id="adSkipBtn" onclick="skipInterstitial()">✕ Cerrar</button>
-  <div id="startio-interstitial"></div>
-</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <script>
 // ═══════════════════════════════════
-// ANUNCIOS — START.IO
+// ANUNCIOS — Start.io (SDK nativo Android)
+// El banner y el intersticial los maneja
+// el código Kotlin vía AndroidBridge
 // ═══════════════════════════════════
-var ADS_APP_ID = '203947726';
 var adsEnabled = true;
 var interstitialCount = 0;
-var interstitialEvery = 3; // Mostrar intersticial cada 3 cambios de emisora
-var skipTimer = null;
+var interstitialEvery = 3;
 
 function initAds(){
-  if(!adsEnabled || !ADS_APP_ID) return;
-  try{
-    // Inicializar Start.io SDK
-    startApp.init({appId: ADS_APP_ID});
-    // Banner
-    startApp.showBanner({
-      containerId: 'startio-banner',
-      size: 'BANNER',
-      onLoad: function(){
-        document.getElementById('adBannerWrap').classList.add('show');
-        // Ajustar padding del contenido para el banner
-        document.querySelector('.phone').style.paddingBottom = '170px';
-      },
-      onError: function(e){ console.log('Banner error:', e); }
-    });
-    console.log('Start.io inicializado');
-  }catch(e){ console.log('Ads init error:', e); }
+  // Notificar al SDK nativo que inicialice el banner
+  if(window.AndroidBridge){
+    try{ AndroidBridge.initAds(adsEnabled); }catch(e){}
+  }
 }
 
 function showInterstitial(){
-  if(!adsEnabled || !ADS_APP_ID) return;
+  if(!adsEnabled) return;
   interstitialCount++;
   if(interstitialCount < interstitialEvery) return;
   interstitialCount = 0;
-  try{
-    startApp.showInterstitial({
-      containerId: 'startio-interstitial',
-      onLoad: function(){
-        var wrap = document.getElementById('adInterstitial');
-        wrap.classList.add('show');
-        // Mostrar botón cerrar después de 5 segundos
-        var skipBtn = document.getElementById('adSkipBtn');
-        skipBtn.style.display = 'none';
-        var secs = 5;
-        skipTimer = setInterval(function(){
-          secs--;
-          if(secs <= 0){
-            clearInterval(skipTimer);
-            skipBtn.style.display = 'block';
-            skipBtn.textContent = '✕ Cerrar';
-          } else {
-            skipBtn.style.display = 'block';
-            skipBtn.textContent = 'Cerrar en ' + secs + 's';
-            skipBtn.style.opacity = '0.5';
-            skipBtn.onclick = null;
-          }
-        }, 1000);
-        setTimeout(function(){
-          skipBtn.style.opacity = '1';
-          skipBtn.onclick = skipInterstitial;
-        }, 5000);
-      },
-      onError: function(e){ console.log('Interstitial error:', e); }
-    });
-  }catch(e){ console.log('Interstitial error:', e); }
+  // Llamar al SDK nativo para mostrar intersticial
+  if(window.AndroidBridge){
+    try{ AndroidBridge.showInterstitial(); }catch(e){}
+  }
 }
 
-function skipInterstitial(){
-  if(skipTimer) clearInterval(skipTimer);
-  document.getElementById('adInterstitial').classList.remove('show');
-  document.getElementById('startio-interstitial').innerHTML = '';
-}
+function skipInterstitial(){ }
 
-// Cargar config de anuncios desde Firebase
 function loadAdsConfig(data){
   if(data && data.ads){
-    if(data.ads.startioId) ADS_APP_ID = data.ads.startioId;
     if(typeof data.ads.enabled !== 'undefined') adsEnabled = data.ads.enabled;
-    if(data.ads.interstitialEvery) interstitialEvery = data.ads.interstitialEvery;
+    if(data.ads.interstitialEvery) interstitialEvery = parseInt(data.ads.interstitialEvery);
   }
 }
 
@@ -788,8 +732,8 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
 audio.addEventListener('play',function(){startSilentAudio();var s=stations[cur]||{};setupMediaSession(s.name,s.freq);if(window.AndroidBridge){try{AndroidBridge.startRadioService(s.name||'Sintonía',s.freq||'Radio en vivo');}catch(e){}}});
 audio.addEventListener('pause',function(){if(window.AndroidBridge){try{AndroidBridge.stopRadioService();}catch(e){}}if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused';});
 iPlayer();applyDon();
-// Iniciar anuncios
-setTimeout(initAds, 2000);
+// Iniciar anuncios via SDK nativo
+setTimeout(initAds, 1500);
 // Mostrar lista local inmediatamente
 buildCatTabs();rList();rFavs();
 // Cargar desde Firebase (actualiza sin parpadear)
