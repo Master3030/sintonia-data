@@ -385,58 +385,45 @@ body.light .bnav{background:rgba(242,242,242,.96)}
     <div class="flbl">Emisoras actuales</div>
     <div id="admList"></div>
     <div class="adv"></div>
-    <div class="flbl">💰 Monetización</div>
 
-    <!-- Redes publicitarias -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px">
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(0,150,255,.15)">🚀</div>
-        <div class="ad-net-info"><div class="ad-net-name">Start.io</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
-        <div id="startio-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(255,100,0,.15)">⚡</div>
-        <div class="ad-net-info"><div class="ad-net-name">Wortise</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
-        <div id="wortise-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(66,133,244,.15)">🅰</div>
-        <div class="ad-net-info"><div class="ad-net-name">Google AdMob</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
-        <div id="admob-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(24,119,242,.15)">📘</div>
-        <div class="ad-net-info"><div class="ad-net-name">Facebook Ads</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
-        <div id="facebook-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(255,255,255,.08)">🎮</div>
-        <div class="ad-net-info"><div class="ad-net-name">Unity Ads</div><div class="ad-net-types">Banner · Intersticial · Video</div></div>
-        <div id="unity-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(0,200,150,.15)">💎</div>
-        <div class="ad-net-info"><div class="ad-net-name">IronSource</div><div class="ad-net-types">Banner · Intersticial · Video</div></div>
-        <div id="ironsource-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(255,50,100,.15)">📲</div>
-        <div class="ad-net-info"><div class="ad-net-name">Appnext</div><div class="ad-net-types">Banner · Intersticial · Nativo</div></div>
-        <div id="appnext-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <div class="ad-network-row">
-        <div class="ad-net-logo" style="background:rgba(150,0,255,.15)">💰</div>
-        <div class="ad-net-info"><div class="ad-net-name">Monetag</div><div class="ad-net-types">Banner · Intersticial</div></div>
-        <div id="monetag-status" class="ad-status-off">Sin ID</div>
+    <!-- MONETIZACIÓN -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="flbl" style="margin-bottom:0">💰 Monetización</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:11px;color:rgba(255,255,255,.4)">Anuncios</div>
+        <div class="tog" id="adsTog" onclick="tAds()"></div>
       </div>
     </div>
 
-    <!-- Configuración -->
-    <input class="fi" id="fa-startio" type="text" placeholder="Start.io App ID">
-    <input class="fi" id="fa-wortise" type="text" placeholder="Wortise App ID (opcional)">
-    <input class="fi" id="fa-admob-banner" type="text" placeholder="AdMob Banner ID (opcional)">
-    <input class="fi" id="fa-admob-int" type="text" placeholder="AdMob Intersticial ID (opcional)">
-    <div class="clr" style="margin-bottom:10px;gap:16px">
+    <!-- START.IO -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(0,150,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px">🚀</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#fff">Start.io</div><div style="font-size:10px;color:rgba(255,255,255,.3)">SDK nativo integrado</div></div>
+        <div id="startio-status" class="ad-status-off">Sin ID</div>
+      </div>
+      <input class="fi" id="fa-startio" type="text" placeholder="App ID (ej: 203947726)" style="margin-bottom:10px">
+      <div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:8px;letter-spacing:1px">ACTIVAR</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
+          <input type="checkbox" id="cb-startio-banner" style="accent-color:#E8003D;width:16px;height:16px"> Banner
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
+          <input type="checkbox" id="cb-startio-int" style="accent-color:#E8003D;width:16px;height:16px"> Intersticial
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
+          <input type="checkbox" id="cb-startio-native" style="accent-color:#E8003D;width:16px;height:16px"> Nativo en lista
+        </label>
+      </div>
+    </div>
+
+    <!-- PRÓXIMAMENTE -->
+    <div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:10px;opacity:.5">
+      <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center">Más redes próximamente: Wortise · AdMob · Unity · IronSource</div>
+    </div>
+
+    <!-- Frecuencia intersticial -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <div style="flex:1">
         <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:6px">Intersticial cada</div>
         <select class="fi" id="fa-int-every" style="margin-bottom:0">
@@ -447,12 +434,8 @@ body.light .bnav{background:rgba(242,242,242,.96)}
           <option value="10">10 cambios</option>
         </select>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;padding-top:20px">
-        <div style="font-size:13px;color:rgba(255,255,255,.5)">Anuncios</div>
-        <div class="tog" id="adsTog" onclick="tAds()"></div>
-      </div>
     </div>
-    <button class="badd" style="margin-bottom:0" onclick="sAdsCfg(event)">Guardar anuncios</button>
+    <button class="badd" style="margin-bottom:0" onclick="sAdsCfg(event)">Guardar configuración de anuncios</button>
 
     <div class="adv"></div>
     <div class="flbl">📊 Estadísticas en tiempo real <button class="sbn" style="padding:4px 10px;margin-left:8px" onclick="loadStats()">↻ Actualizar</button></div>
@@ -516,17 +499,13 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 // ANUNCIOS — Multi-red
 // Banner + Intersticial + Nativo
 // ═══════════════════════════════════
-var ADS_APP_ID = '203947726'; // Start.io
-var ADS_WORTISE_ID = '';
-var ADS_ADMOB_BANNER = '';
-var ADS_ADMOB_INT = '';
+var ADS_APP_ID = '';
 var adsEnabled = true;
 var interstitialCount = 0;
 var interstitialEvery = 3;
 var interstitialShowing = false;
 var adIntCountdownTimer = null;
-var adIntUrl = '';
-var adBannerUrl = '';
+var adsCfg = {startioBanner:false,startioInterstitial:false,startioNative:false};
 
 // Datos de anuncios de ejemplo (se reemplazan con los de la red real)
 var adData = {
@@ -544,10 +523,16 @@ var adData = {
 };
 
 function initAds(){
-  // El banner nativo lo maneja el SDK de Android (MainActivity.kt)
-  // Solo notificamos el estado al SDK nativo
-  if(window.AndroidBridge){
-    try{ AndroidBridge.initAds(adsEnabled); }catch(e){}
+  // El SDK nativo ya está configurado via applyAdConfig
+  // Esta función se llama solo si no se cargó config de Firebase aún
+  if(window.AndroidBridge && ADS_APP_ID){
+    try{
+      AndroidBridge.applyAdConfig(
+        adsEnabled, ADS_APP_ID,
+        adsCfg.startioBanner, adsCfg.startioInterstitial, adsCfg.startioNative,
+        interstitialEvery
+      );
+    }catch(e){}
   }
 }
 
@@ -567,14 +552,9 @@ function showInterstitial(){
   adIntUrl = d.url;
   // Mostrar intersticial nativo via SDK Android
   if(window.AndroidBridge){
-    try{
-      AndroidBridge.showInterstitial();
-      // No mostrar el HTML interstitial - el SDK lo maneja nativamente
-      interstitialShowing=false;
-      return;
-    }catch(e){}
+    try{AndroidBridge.showInterstitial();interstitialShowing=false;return;}catch(e){}
   }
-  // Fallback: mostrar el HTML si no hay AndroidBridge (modo web)
+  // Fallback web
   document.getElementById('adInterstitial').classList.add('show');
   // Countdown 5 segundos
   var secs = 5;
@@ -609,8 +589,8 @@ function skipInterstitial(){
 
 // Anuncio nativo en la lista (se inserta cada N emisoras)
 function mkNativeAd(){
-  // Solo mostrar si hay anuncios activos
-  if(!adsEnabled) return null;
+  // Solo mostrar si nativo está activo en config
+  if(!adsEnabled||!adsCfg.startioNative) return null;
   var ads=[
     {icon:'🎮',bg:'linear-gradient(135deg,#667eea,#764ba2)',title:'Jugá gratis ahora',desc:'El juego más popular del momento',cta:'Instalar'},
     {icon:'🛍️',bg:'linear-gradient(135deg,#f093fb,#f5576c)',title:'Oferta especial hoy',desc:'Descuentos exclusivos para vos',cta:'Ver oferta'},
@@ -635,16 +615,31 @@ function mkNativeAd(){
 }
 
 function loadAdsConfig(data){
-  if(data && data.ads){
-    if(data.ads.startioId) ADS_APP_ID=data.ads.startioId;
-    if(data.ads.wortiseId) ADS_WORTISE_ID=data.ads.wortiseId;
-    if(data.ads.admobBanner) ADS_ADMOB_BANNER=data.ads.admobBanner;
-    if(data.ads.admobInt) ADS_ADMOB_INT=data.ads.admobInt;
-    if(typeof data.ads.enabled!=='undefined') adsEnabled=data.ads.enabled;
-    if(data.ads.interstitialEvery) interstitialEvery=parseInt(data.ads.interstitialEvery);
-    if(data.ads.bannerData) adData.banner=data.ads.bannerData;
-    if(data.ads.interstitialData) adData.interstitial=data.ads.interstitialData;
-  }
+  if(!data||!data.ads) return;
+  var a=data.ads;
+  if(a.startioId) ADS_APP_ID=a.startioId;
+  if(typeof a.enabled!=='undefined') adsEnabled=a.enabled;
+  if(a.interstitialEvery) interstitialEvery=parseInt(a.interstitialEvery);
+  adsCfg={
+    startioBanner:!!a.startioBanner,
+    startioInterstitial:!!a.startioInterstitial,
+    startioNative:!!a.startioNative
+  };
+  applyAdsConfig(a);
+}
+
+function applyAdsConfig(a){
+  if(!window.AndroidBridge) return;
+  try{
+    AndroidBridge.applyAdConfig(
+      adsEnabled,
+      ADS_APP_ID||'',
+      !!(a.startioBanner),
+      !!(a.startioInterstitial),
+      !!(a.startioNative),
+      interstitialEvery
+    );
+  }catch(e){}
 }
 
 // FIREBASE
@@ -780,16 +775,16 @@ function clsPw(){document.getElementById('pwOv').classList.remove('open');taps=0
 function chkPw(){var v=document.getElementById('pwIn').value;if(!v)return;hashPassword(v).then(function(hash){if(hash===PASS_HASH){clsPw();oAdm();}else{var i=document.getElementById('pwIn');i.classList.add('err','shake');setTimeout(function(){i.classList.remove('shake');i.value='';},500);}});}
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')chkPw();});
 function oAdm(){document.getElementById('admOv').classList.add('open');loadStats();
-  document.getElementById('fa-startio').value=ADS_APP_ID||'';
-  var fw=document.getElementById('fa-wortise');if(fw)fw.value=ADS_WORTISE_ID||'';
-  var fab=document.getElementById('fa-admob-banner');if(fab)fab.value=ADS_ADMOB_BANNER||'';
-  var fai=document.getElementById('fa-admob-int');if(fai)fai.value=ADS_ADMOB_INT||'';
+  var fs=document.getElementById('fa-startio');if(fs)fs.value=ADS_APP_ID||'';
   document.getElementById('adsTog').classList.toggle('on',adsEnabled);
   var sel=document.getElementById('fa-int-every');if(sel)sel.value=String(interstitialEvery);
-  // Actualizar estado de redes
-  var ss=document.getElementById('startio-status');if(ss){ss.className=ADS_APP_ID?'ad-status-on':'ad-status-off';ss.textContent=ADS_APP_ID?'✓ Activo':'Sin ID';}
-  var ws=document.getElementById('wortise-status');if(ws){ws.className=ADS_WORTISE_ID?'ad-status-on':'ad-status-off';ws.textContent=ADS_WORTISE_ID?'✓ Activo':'Sin ID';}
-  var as=document.getElementById('admob-status');if(as){as.className=ADS_ADMOB_BANNER?'ad-status-on':'ad-status-off';as.textContent=ADS_ADMOB_BANNER?'✓ Activo':'Sin ID';}document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
+  // Checkboxes
+  var cbb=document.getElementById('cb-startio-banner');if(cbb)cbb.checked=adsCfg.startioBanner||false;
+  var cbi=document.getElementById('cb-startio-int');if(cbi)cbi.checked=adsCfg.startioInterstitial||false;
+  var cbn=document.getElementById('cb-startio-native');if(cbn)cbn.checked=adsCfg.startioNative||false;
+  // Status
+  var ss=document.getElementById('startio-status');
+  if(ss){ss.className=ADS_APP_ID?'ad-status-on':'ad-status-off';ss.textContent=ADS_APP_ID?'✓ Con ID':'Sin ID';}document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
 function clsAdm(){document.getElementById('admOv').classList.remove('open');}
 function admOut(e){if(e.target===document.getElementById('admOv'))clsAdm();}
 function uClr(){var c=document.getElementById('fk').value;document.getElementById('cpv').style.background=c;document.getElementById('chx').textContent=c;}
@@ -914,26 +909,35 @@ function tAds(){
   adsEnabled=!adsEnabled;
   document.getElementById('adsTog').classList.toggle('on',adsEnabled);
 }
-function sAdsCfg(e){
+function adChkStatus(){
   var sid=document.getElementById('fa-startio').value.trim();
-  var wid=(document.getElementById('fa-wortise')||{}).value||'';
-  var abid=(document.getElementById('fa-admob-banner')||{}).value||'';
-  var aiid=(document.getElementById('fa-admob-int')||{}).value||'';
-  var every=parseInt(document.getElementById('fa-int-every').value)||3;
-  if(sid) ADS_APP_ID=sid.trim();
-  if(wid) ADS_WORTISE_ID=wid.trim();
-  if(abid) ADS_ADMOB_BANNER=abid.trim();
-  if(aiid) ADS_ADMOB_INT=aiid.trim();
+  var ss=document.getElementById('startio-status');
+  if(ss){ss.className=sid?'ad-status-on':'ad-status-off';ss.textContent=sid?'✓ Con ID':'Sin ID';}
+}
+function sAdsCfg(e){
+  var sid=(document.getElementById('fa-startio')||{value:''}).value.trim();
+  var every=parseInt((document.getElementById('fa-int-every')||{value:'3'}).value)||3;
+  var startioBanner=!!(document.getElementById('cb-startio-banner')||{}).checked;
+  var startioInt=!!(document.getElementById('cb-startio-int')||{}).checked;
+  var startioNative=!!(document.getElementById('cb-startio-native')||{}).checked;
+  if(sid) ADS_APP_ID=sid;
   interstitialEvery=every;
+  var adsData={
+    startioId:ADS_APP_ID,
+    startioBanner:startioBanner,
+    startioInterstitial:startioInt,
+    startioNative:startioNative,
+    enabled:adsEnabled,
+    interstitialEvery:interstitialEvery
+  };
   var b=e.target;b.textContent='Guardando...';b.style.background='#555';
-  var adsData={startioId:ADS_APP_ID,wortiseId:ADS_WORTISE_ID,admobBanner:ADS_ADMOB_BANNER,admobInt:ADS_ADMOB_INT,enabled:adsEnabled,interstitialEvery:interstitialEvery};
   db.collection('sintonia').doc('data').update({ads:adsData}).then(function(){
     b.textContent='✓ Guardado';b.style.background='#1B5E20';
-    setTimeout(function(){b.textContent='Guardar anuncios';b.style.background='';},3000);
-    initAds();
+    setTimeout(function(){b.textContent='Guardar configuración de anuncios';b.style.background='';},3000);
+    applyAdsConfig(adsData);
   }).catch(function(){
     b.textContent='⚠ Error';b.style.background='#8B4000';
-    setTimeout(function(){b.textContent='Guardar anuncios';b.style.background='';},3000);
+    setTimeout(function(){b.textContent='Guardar configuración de anuncios';b.style.background='';},3000);
   });
 }
 function showGHStatus(msg){var el=document.getElementById('ghStatus');el.textContent=msg;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},3000);}
