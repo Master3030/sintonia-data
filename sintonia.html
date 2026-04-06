@@ -609,27 +609,28 @@ function skipInterstitial(){
 
 // Anuncio nativo en la lista (se inserta cada N emisoras)
 function mkNativeAd(){
+  // Solo mostrar si hay anuncios activos
+  if(!adsEnabled) return null;
+  var ads=[
+    {icon:'🎮',bg:'linear-gradient(135deg,#667eea,#764ba2)',title:'Jugá gratis ahora',desc:'El juego más popular del momento',cta:'Instalar'},
+    {icon:'🛍️',bg:'linear-gradient(135deg,#f093fb,#f5576c)',title:'Oferta especial hoy',desc:'Descuentos exclusivos para vos',cta:'Ver oferta'},
+    {icon:'📱',bg:'linear-gradient(135deg,#11998e,#38ef7d)',title:'Descargá esta app',desc:'Miles de usuarios ya la usan',cta:'Descargar'},
+    {icon:'💰',bg:'linear-gradient(135deg,#f7971e,#ffd200)',title:'Ganá dinero online',desc:'Empezá hoy mismo sin costo',cta:'Saber más'},
+  ];
+  var d=ads[Math.floor(Math.random()*ads.length)];
   var row=document.createElement('div');
   row.className='native-list-ad';
-  row.style.padding='8px 0';
-  if(ADS_APP_ID){
-    row.innerHTML=
-      '<span class="native-list-badge">Publicidad</span>'+
-      '<iframe src="https://www.startappservice.com/serve?appId='+ADS_APP_ID+'&adType=native&size=300x50" '+
-      'width="100%" height="60" frameborder="0" scrolling="no" style="border:none;display:block" '+
-      'allow="autoplay" sandbox="allow-scripts allow-popups allow-same-origin allow-top-navigation"></iframe>';
-  } else {
-    // Fallback demo si no hay ID
-    var d=adData.banner;
-    row.innerHTML=
-      '<span class="native-list-badge">Publicidad</span>'+
-      '<div class="native-list-icon" style="background:'+d.iconBg+'">'+d.icon+'</div>'+
-      '<div class="native-list-info">'+
-        '<div class="native-list-title">'+d.title+'</div>'+
-        '<div class="native-list-desc">'+d.desc+'</div>'+
-      '</div>'+
-      '<span class="native-list-cta">'+d.cta+'</span>';
-  }
+  row.onclick=function(){
+    if(window.AndroidBridge) try{AndroidBridge.showInterstitial();}catch(e){}
+  };
+  row.innerHTML=
+    '<span class="native-list-badge">Publicidad</span>'+
+    '<div class="native-list-icon" style="background:'+d.bg+'">'+d.icon+'</div>'+
+    '<div class="native-list-info">'+
+      '<div class="native-list-title">'+d.title+'</div>'+
+      '<div class="native-list-desc">'+d.desc+'</div>'+
+    '</div>'+
+    '<span class="native-list-cta">'+d.cta+'</span>';
   return row;
 }
 
@@ -896,8 +897,8 @@ function rList(){
   filtered.forEach(function(s,pos){
     var i=stations.indexOf(s);
     el.appendChild(mkRow(s,i,i===cur));
-    // Insertar anuncio nativo después de cada 4 emisoras
-    if(adsEnabled && pos===3) el.appendChild(mkNativeAd());
+    // Insertar anuncio nativo después de la 4ta emisora
+    if(pos===3){var na=mkNativeAd();if(na)el.appendChild(na);}
   });
 }
 function rRec(){
