@@ -570,17 +570,26 @@ var adData = {
 };
 
 function initAds(){
-  // El SDK nativo ya está configurado via applyAdConfig
-  // Esta función se llama solo si no se cargó config de Firebase aún
-  if(window.AndroidBridge && ADS_APP_ID){
-    try{
-      AndroidBridge.applyAdConfig(
-        adsEnabled, ADS_APP_ID,
-        adsCfg.startioBanner, adsCfg.startioInterstitial, adsCfg.startioNative,
-        interstitialEvery
-      );
-    }catch(e){}
-  }
+  if(!window.AndroidBridge) return;
+  try{
+    AndroidBridge.applyAdConfig(
+      adsEnabled,
+      ADS_APP_ID||'',
+      adsCfg.startioBanner||false,
+      adsCfg.startioInterstitial||false,
+      adsCfg.startioNative||false,
+      interstitialEvery,
+      ADS_WORTISE_APP_ID||'',
+      ADS_WORTISE_UNIT_ID||'',
+      adsCfg.wortisBanner||false,
+      adsCfg.wortiseInterstitial||false,
+      adsCfg.wortiseNative||false,
+      ADS_ADMOB_BANNER||'',
+      ADS_ADMOB_INT||'',
+      adsCfg.admobBanner||false,
+      adsCfg.admobInterstitial||false
+    );
+  }catch(e){ console.log('applyAdConfig error:',e); }
 }
 
 function showInterstitial(){
@@ -694,17 +703,15 @@ function applyAdsConfig(a){
       !!(a.startioInterstitial),
       !!(a.startioNative),
       interstitialEvery,
-      ADS_WORTISE_APP_ID||'',
-      ADS_WORTISE_UNIT_ID||'',
-      !!(a.wortisBanner),
-      !!(a.wortiseInterstitial),
-      !!(a.wortiseNative),
+      ''/* wortise not available in CodeAssist */,
+      '',
+      false, false, false,
       ADS_ADMOB_BANNER||'',
       ADS_ADMOB_INT||'',
       !!(a.admobBanner),
       !!(a.admobInterstitial)
     );
-  }catch(e){}
+  }catch(e){ console.log('applyAdsConfig error:',e); }
 }
 
 // FIREBASE
