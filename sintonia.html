@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -417,52 +418,9 @@ body.light .bnav{background:rgba(242,242,242,.96)}
       </div>
     </div>
 
-    <!-- WORTISE -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,100,0,.2);display:flex;align-items:center;justify-content:center;font-size:16px">⚡</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#fff">Wortise</div><div style="font-size:10px;color:rgba(255,255,255,.3)">SDK nativo integrado</div></div>
-        <div id="wortise-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <input class="fi" id="fa-wortise-app" type="text" placeholder="App ID (ej: 116d62fd-bba4-...)" style="margin-bottom:6px">
-      <input class="fi" id="fa-wortise-unit" type="text" placeholder="Ad Unit ID (ej: cb33d2f0-c020-...)" style="margin-bottom:10px">
-      <div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:8px;letter-spacing:1px">ACTIVAR</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
-          <input type="checkbox" id="cb-wortise-banner" style="accent-color:#E8003D;width:16px;height:16px"> Banner
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
-          <input type="checkbox" id="cb-wortise-int" style="accent-color:#E8003D;width:16px;height:16px"> Intersticial
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
-          <input type="checkbox" id="cb-wortise-native" style="accent-color:#E8003D;width:16px;height:16px"> Nativo en lista
-        </label>
-      </div>
-    </div>
-
-    <!-- ADMOB -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div style="width:32px;height:32px;border-radius:8px;background:rgba(66,133,244,.2);display:flex;align-items:center;justify-content:center;font-size:16px">🅰</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#fff">Google AdMob</div><div style="font-size:10px;color:rgba(255,255,255,.3)">SDK nativo integrado</div></div>
-        <div id="admob-status" class="ad-status-off">Sin ID</div>
-      </div>
-      <input class="fi" id="fa-admob-banner" type="text" placeholder="Banner ID (ca-app-pub-xxx/xxx)" style="margin-bottom:6px">
-      <input class="fi" id="fa-admob-int" type="text" placeholder="Intersticial ID (ca-app-pub-xxx/xxx)" style="margin-bottom:10px">
-      <div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:8px;letter-spacing:1px">ACTIVAR</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
-          <input type="checkbox" id="cb-admob-banner" style="accent-color:#E8003D;width:16px;height:16px"> Banner
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6)">
-          <input type="checkbox" id="cb-admob-int" style="accent-color:#E8003D;width:16px;height:16px"> Intersticial
-        </label>
-      </div>
-    </div>
-
     <!-- PRÓXIMAMENTE -->
     <div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:10px;opacity:.5">
-      <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center">Más redes próximamente: Unity · IronSource</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:center">Más redes próximamente: Wortise · AdMob · Unity · IronSource</div>
     </div>
 
     <!-- Frecuencia intersticial -->
@@ -543,10 +501,6 @@ body.light .bnav{background:rgba(242,242,242,.96)}
 // Banner + Intersticial + Nativo
 // ═══════════════════════════════════
 var ADS_APP_ID = '';
-var ADS_WORTISE_APP_ID = '';
-var ADS_WORTISE_UNIT_ID = '';
-var ADS_ADMOB_BANNER = '';
-var ADS_ADMOB_INT = '';
 var adsEnabled = true;
 var interstitialCount = 0;
 var interstitialEvery = 3;
@@ -570,26 +524,17 @@ var adData = {
 };
 
 function initAds(){
-  if(!window.AndroidBridge) return;
-  try{
-    AndroidBridge.applyAdConfig(
-      adsEnabled,
-      ADS_APP_ID||'',
-      adsCfg.startioBanner||false,
-      adsCfg.startioInterstitial||false,
-      adsCfg.startioNative||false,
-      interstitialEvery,
-      ADS_WORTISE_APP_ID||'',
-      ADS_WORTISE_UNIT_ID||'',
-      adsCfg.wortisBanner||false,
-      adsCfg.wortiseInterstitial||false,
-      adsCfg.wortiseNative||false,
-      ADS_ADMOB_BANNER||'',
-      ADS_ADMOB_INT||'',
-      adsCfg.admobBanner||false,
-      adsCfg.admobInterstitial||false
-    );
-  }catch(e){ console.log('applyAdConfig error:',e); }
+  // El SDK nativo ya está configurado via applyAdConfig
+  // Esta función se llama solo si no se cargó config de Firebase aún
+  if(window.AndroidBridge && ADS_APP_ID){
+    try{
+      AndroidBridge.applyAdConfig(
+        adsEnabled, ADS_APP_ID,
+        adsCfg.startioBanner, adsCfg.startioInterstitial, adsCfg.startioNative,
+        interstitialEvery
+      );
+    }catch(e){}
+  }
 }
 
 function showInterstitial(){
@@ -645,8 +590,8 @@ function skipInterstitial(){
 
 // Anuncio nativo en la lista (se inserta cada N emisoras)
 function mkNativeAd(){
-  // Solo mostrar si nativo está activo en alguna red
-  if(!adsEnabled||(!adsCfg.startioNative&&!adsCfg.wortiseNative)) return null;
+  // Solo mostrar si nativo está activo en config
+  if(!adsEnabled||!adsCfg.startioNative) return null;
   var ads=[
     {icon:'🎮',bg:'linear-gradient(135deg,#667eea,#764ba2)',title:'Jugá gratis ahora',desc:'El juego más popular del momento',cta:'Instalar'},
     {icon:'🛍️',bg:'linear-gradient(135deg,#f093fb,#f5576c)',title:'Oferta especial hoy',desc:'Descuentos exclusivos para vos',cta:'Ver oferta'},
@@ -674,21 +619,12 @@ function loadAdsConfig(data){
   if(!data||!data.ads) return;
   var a=data.ads;
   if(a.startioId) ADS_APP_ID=a.startioId;
-  if(a.wortiseAppId) ADS_WORTISE_APP_ID=a.wortiseAppId;
-  if(a.wortiseUnitId) ADS_WORTISE_UNIT_ID=a.wortiseUnitId;
-  if(a.admobBannerId) ADS_ADMOB_BANNER=a.admobBannerId;
-  if(a.admobInterstitialId) ADS_ADMOB_INT=a.admobInterstitialId;
   if(typeof a.enabled!=='undefined') adsEnabled=a.enabled;
   if(a.interstitialEvery) interstitialEvery=parseInt(a.interstitialEvery);
   adsCfg={
     startioBanner:!!a.startioBanner,
     startioInterstitial:!!a.startioInterstitial,
-    startioNative:!!a.startioNative,
-    wortisBanner:!!a.wortisBanner,
-    wortiseInterstitial:!!a.wortiseInterstitial,
-    wortiseNative:!!a.wortiseNative,
-    admobBanner:!!a.admobBanner,
-    admobInterstitial:!!a.admobInterstitial
+    startioNative:!!a.startioNative
   };
   applyAdsConfig(a);
 }
@@ -702,16 +638,9 @@ function applyAdsConfig(a){
       !!(a.startioBanner),
       !!(a.startioInterstitial),
       !!(a.startioNative),
-      interstitialEvery,
-      ''/* wortise not available in CodeAssist */,
-      '',
-      false, false, false,
-      ADS_ADMOB_BANNER||'',
-      ADS_ADMOB_INT||'',
-      !!(a.admobBanner),
-      !!(a.admobInterstitial)
+      interstitialEvery
     );
-  }catch(e){ console.log('applyAdsConfig error:',e); }
+  }catch(e){}
 }
 
 // FIREBASE
@@ -856,20 +785,7 @@ function oAdm(){document.getElementById('admOv').classList.add('open');loadStats
   var cbn=document.getElementById('cb-startio-native');if(cbn)cbn.checked=adsCfg.startioNative||false;
   // Status
   var ss=document.getElementById('startio-status');
-  if(ss){ss.className=ADS_APP_ID?'ad-status-on':'ad-status-off';ss.textContent=ADS_APP_ID?'✓ Con ID':'Sin ID';}
-  var fwa=document.getElementById('fa-wortise-app');if(fwa)fwa.value=ADS_WORTISE_APP_ID||'';
-  var fwu=document.getElementById('fa-wortise-unit');if(fwu)fwu.value=ADS_WORTISE_UNIT_ID||'';
-  var ws=document.getElementById('wortise-status');
-  if(ws){ws.className=ADS_WORTISE_APP_ID?'ad-status-on':'ad-status-off';ws.textContent=ADS_WORTISE_APP_ID?'✓ Con ID':'Sin ID';}
-  var cwb=document.getElementById('cb-wortise-banner');if(cwb)cwb.checked=adsCfg.wortisBanner||false;
-  var cwi=document.getElementById('cb-wortise-int');if(cwi)cwi.checked=adsCfg.wortiseInterstitial||false;
-  var cwn=document.getElementById('cb-wortise-native');if(cwn)cwn.checked=adsCfg.wortiseNative||false;
-  var fab=document.getElementById('fa-admob-banner');if(fab)fab.value=ADS_ADMOB_BANNER||'';
-  var fai=document.getElementById('fa-admob-int');if(fai)fai.value=ADS_ADMOB_INT||'';
-  var as=document.getElementById('admob-status');
-  if(as){as.className=ADS_ADMOB_BANNER?'ad-status-on':'ad-status-off';as.textContent=ADS_ADMOB_BANNER?'✓ Con ID':'Sin ID';}
-  var cab=document.getElementById('cb-admob-banner');if(cab)cab.checked=adsCfg.admobBanner||false;
-  var cai=document.getElementById('cb-admob-int');if(cai)cai.checked=adsCfg.admobInterstitial||false;document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
+  if(ss){ss.className=ADS_APP_ID?'ad-status-on':'ad-status-off';ss.textContent=ADS_APP_ID?'✓ Con ID':'Sin ID';}document.getElementById('fa-url').value=appC.url||'';document.getElementById('fa-apk').value=appC.apk||'';document.getElementById('fa-form').value=appC.form||'';var don=donC();document.getElementById('fd-btc').value=don.btc||'';document.getElementById('fd-pp').value=don.pp||'';document.getElementById('fd-bank').value=don.bank||'';rAdmList();uClr();}
 function clsAdm(){document.getElementById('admOv').classList.remove('open');}
 function admOut(e){if(e.target===document.getElementById('admOv'))clsAdm();}
 function uClr(){var c=document.getElementById('fk').value;document.getElementById('cpv').style.background=c;document.getElementById('chx').textContent=c;}
@@ -1001,39 +917,17 @@ function adChkStatus(){
 }
 function sAdsCfg(e){
   var sid=(document.getElementById('fa-startio')||{value:''}).value.trim();
-  var wappid=(document.getElementById('fa-wortise-app')||{value:''}).value.trim();
-  var wunitid=(document.getElementById('fa-wortise-unit')||{value:''}).value.trim();
   var every=parseInt((document.getElementById('fa-int-every')||{value:'3'}).value)||3;
   var startioBanner=!!(document.getElementById('cb-startio-banner')||{}).checked;
   var startioInt=!!(document.getElementById('cb-startio-int')||{}).checked;
   var startioNative=!!(document.getElementById('cb-startio-native')||{}).checked;
-  var wortisBanner=!!(document.getElementById('cb-wortise-banner')||{}).checked;
-  var wortiseInt=!!(document.getElementById('cb-wortise-int')||{}).checked;
-  var wortiseNative=!!(document.getElementById('cb-wortise-native')||{}).checked;
   if(sid) ADS_APP_ID=sid;
-  if(wappid) ADS_WORTISE_APP_ID=wappid;
-  if(wunitid) ADS_WORTISE_UNIT_ID=wunitid;
   interstitialEvery=every;
-  var admobBid=(document.getElementById('fa-admob-banner')||{value:''}).value.trim();
-  var admobIid=(document.getElementById('fa-admob-int')||{value:''}).value.trim();
-  var admobBanner=!!(document.getElementById('cb-admob-banner')||{}).checked;
-  var admobInt=!!(document.getElementById('cb-admob-int')||{}).checked;
-  if(admobBid) ADS_ADMOB_BANNER=admobBid;
-  if(admobIid) ADS_ADMOB_INT=admobIid;
   var adsData={
     startioId:ADS_APP_ID,
     startioBanner:startioBanner,
     startioInterstitial:startioInt,
     startioNative:startioNative,
-    wortiseAppId:ADS_WORTISE_APP_ID,
-    wortiseUnitId:ADS_WORTISE_UNIT_ID,
-    wortisBanner:wortisBanner,
-    wortiseInterstitial:wortiseInt,
-    wortiseNative:wortiseNative,
-    admobBannerId:ADS_ADMOB_BANNER,
-    admobInterstitialId:ADS_ADMOB_INT,
-    admobBanner:admobBanner,
-    admobInterstitial:admobInt,
     enabled:adsEnabled,
     interstitialEvery:interstitialEvery
   };
