@@ -832,7 +832,14 @@ function showGHStatus(msg){var el=document.getElementById('ghStatus');el.textCon
 function setupMediaSession(name,freq){if(!('mediaSession' in navigator))return;navigator.mediaSession.metadata=new MediaMetadata({title:name||'Sintonía',artist:freq||'Radio en vivo',album:'Sintonía — Radio Paraguay'});navigator.mediaSession.setActionHandler('play',function(){if(audio.paused)audio.play();navigator.mediaSession.playbackState='playing';});navigator.mediaSession.setActionHandler('pause',function(){audio.pause();navigator.mediaSession.playbackState='paused';});navigator.mediaSession.setActionHandler('previoustrack',function(){pSt();});navigator.mediaSession.setActionHandler('nexttrack',function(){nSt();});navigator.mediaSession.playbackState='playing';}
 var silentCtx=null,silentNode=null;
 function startSilentAudio(){try{if(silentCtx)return;silentCtx=new(window.AudioContext||window.webkitAudioContext)();var buf=silentCtx.createBuffer(1,silentCtx.sampleRate*.5,silentCtx.sampleRate);var src=silentCtx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(silentCtx.destination);src.start();silentNode=src;}catch(e){}}
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&silentCtx&&silentCtx.state==='suspended')silentCtx.resume();});
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){
+    if(silentCtx&&silentCtx.state==='suspended') silentCtx.resume();
+    // Resetear contador de intersticial al volver al foco
+    interstitialCount=0;
+    interstitialShowing=false;
+  }
+});
 audio.addEventListener('play',function(){
   startSilentAudio();
   var s=stations[cur]||{};
